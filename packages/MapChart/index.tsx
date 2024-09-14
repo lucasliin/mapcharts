@@ -113,8 +113,8 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     data.forEach(({ x, y, isHighLight }) => {
       drawShape(
         ctx,
-        (Math.floor(x) + CANVAS_OFFSET) * INCREASE,
-        (Math.floor(y) + CANVAS_OFFSET) * INCREASE,
+        (x + CANVAS_OFFSET) * INCREASE,
+        (y + CANVAS_OFFSET) * INCREASE,
         isHighLight
       );
     });
