@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 9998",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
