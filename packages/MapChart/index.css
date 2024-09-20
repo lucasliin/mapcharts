@@ -1,0 +1,42 @@
+.mapchartroot {
+  position: relative;
+  overflow: hidden;
+}
+.mapcharttips {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  color: white;
+  background-color: #9ca3af;
+  user-select: none;
+}
+.mapcharttips2 {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  color: white;
+  background-color: #9ca3af;
+  user-select: none;
+}
+.mapchartcanvas {
+  width: 100%;
+  touch-action: none;
+}
+.mapchartpin {
+  width: 30px;
+  height: 44px;
+  position: absolute;
+  --tw-translate-x: -50%;
+  transform: translate(-50%, -100%) rotate(0) skewX(0) skewY(0) scaleX(1)
+    scaleY(1);
+}
+@media (max-width: 640px) {
+  .mapchartpin {
+    width: 12px;
+    height: 16px;
+    position: absolute;
+    --tw-translate-x: -50%;
+    transform: translate(-50%, -100%) rotate(0) skewX(0) skewY(0) scaleX(1)
+      scaleY(1);
+  }
+}

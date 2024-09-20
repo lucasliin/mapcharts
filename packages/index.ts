@@ -1,3 +1,3 @@
 import MapChart from "./MapChart";
 
-export default { MapChart };
+export default MapChart;

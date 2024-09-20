@@ -1,18 +1,18 @@
 {
-  "name": "richtext",
+  "name": "mapchart",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "files": [
     "lib"
   ],
-  "main": "./lib/richtext.umd.cjs",
-  "module": "./lib/richtext.js",
-  "typings": "./lib/index.d.ts",
+  "main": "./dist/mapchart.umd.cjs",
+  "module": "./dist/mapchart.js",
+  "typings": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/richtext.js",
-      "require": "./lib/richtext.umd.cjs"
+      "import": "./dist/mapchart.js",
+      "require": "./dist/mapchart.umd.js"
     }
   },
   "scripts": {
@@ -27,6 +27,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-typescript": "^11.1.6",
     "@tailwindcss/typography": "^0.5.13",
     "@types/node": "^20.14.10",
