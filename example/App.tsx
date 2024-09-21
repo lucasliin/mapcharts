@@ -4,17 +4,25 @@ import MapChart from "../packages/MapChart";
 const App: React.FC = () => {
   return (
     <div className="content-center h-screen p-10">
-      <div className="border border-black border-solid">
+      <div className="">
         <MapChart
           enableZoom
           enablePan
           editable={false}
+          highLightColor="#4D8359"
+          baseColor="#E3E3DF"
+          defaultSelect="US"
           mapData={{
             pins: [
-              { x: 21.079544615154454, y: 37.324003803279055, country: "US" },
               {
-                x: 17.84090836383097,
-                y: 12.392921552581997,
+                x: 21.079544615154454,
+                y: 37.324003803279055,
+                country: "US",
+                title: "The United States",
+              },
+              {
+                x: 18.309069297315894,
+                y: 19.862386947465776,
                 country: "Canada",
               },
               {
@@ -47,7 +55,7 @@ const App: React.FC = () => {
             ],
             highlights: [
               4736, 2260, 3251, 4937, 2669, 2952, 2645, 2646, 2743, 2742, 2741,
-              2835, 2836,
+              2835, 2836, 1024,
             ],
           }}
         />

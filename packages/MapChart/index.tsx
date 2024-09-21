@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { worldData } from "./worldData";
-import { drawPolygon, INCREASE } from "./util";
+import { drawPolygon, flagMap, INCREASE } from "./util";
 import "./index.css";
 
 /** //- 画布偏移量*/
@@ -15,6 +15,8 @@ const ZOOM_RATIO = 0.05;
 interface Pin {
   x: number;
   y: number;
+  icon?: string;
+  title?: string;
   country: string;
 }
 
@@ -34,6 +36,7 @@ export interface MapChartProps {
   pinSVG?: React.ReactNode;
   onPinClick?: (pin: Pin) => void;
   onZoomChange?: (zoom: number) => void;
+  defaultSelect?: string;
 }
 
 const MapChart: React.FC<MapChartProps> = (props) => {
@@ -48,6 +51,7 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     pinSVG,
     onPinClick,
     onZoomChange,
+    defaultSelect,
   } = props;
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -75,6 +79,8 @@ const MapChart: React.FC<MapChartProps> = (props) => {
   //- 标记位置信息
   const [pinPosition, setPinPosition] = useImmer<Pin[]>([]);
 
+  const [popover, setPopover] = useImmer<null | Pin>(null);
+
   const drawShape = (
     ctx: CanvasRenderingContext2D,
     x: number,
@@ -87,7 +93,7 @@ const MapChart: React.FC<MapChartProps> = (props) => {
       ctx.arc(x, y, 3 * INCREASE, 0, Math.PI * 2);
       ctx.closePath();
     } else if (nodeShape === "2") {
-      //* 三角
+      //* 正方形
       ctx.fillStyle = isHighLight ? highLightColor : baseColor;
       ctx.fillRect(
         x,
@@ -97,10 +103,10 @@ const MapChart: React.FC<MapChartProps> = (props) => {
       );
       return;
     } else if (nodeShape === "3" || nodeShape === "5") {
-      //* 菱形 & 五边形
+      //* 三角 & 五边形
       drawPolygon(ctx, parseInt(nodeShape), x, y, -Math.PI / 2);
     } else if (nodeShape === "4") {
-      //* 正方形
+      //* 菱形
       drawPolygon(ctx, 4, x, y);
     } else if (nodeShape === "6") {
       //* 六边形
@@ -211,6 +217,16 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scale]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (!defaultSelect) return;
+      const ele = mapData?.pins.find((v) => v.country === defaultSelect);
+      if (!ele) return;
+      setPopover({ ...ele });
+    }, 250);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultSelect]);
+
   //- 鼠标按下
   const handleMouseDown = (ev: React.PointerEvent<HTMLCanvasElement>) => {
     if (!editable && !enablePan) return;
@@ -281,8 +297,8 @@ const MapChart: React.FC<MapChartProps> = (props) => {
 
       //TODO: 移动端 & PC 端区分处理
       translateRef.current = limitTranslate({
-        x: translateRef.current.x + dx,
-        y: translateRef.current.y + dy,
+        x: translateRef.current.x + dx * (window.innerWidth <= 600 ? 10 : 1),
+        y: translateRef.current.y + dy * (window.innerWidth <= 600 ? 10 : 1),
       });
       // setValue(dx);
       setTranslate(translateRef.current);
@@ -302,6 +318,7 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     const timeElapsed = endTime - startTime;
     //* 如果移动距离小于阈值,并且时间小于阈值,认定为点击
     if (!isDragging && timeElapsed < timeThreshold && pointers.length < 2) {
+      if (!editable) return;
       handleCanvasClick(ev.clientX, ev.clientY, ev.altKey);
     }
   };
@@ -373,11 +390,35 @@ const MapChart: React.FC<MapChartProps> = (props) => {
 
   return (
     <div className="mapchartroot">
+      <canvas
+        ref={canvasRef}
+        width={1004 * INCREASE}
+        height={540 * INCREASE}
+        className="mapchartcanvas"
+        onMouseLeave={handleMouseUp}
+        onPointerUp={handleMouseUp}
+        onPointerMove={handleMouseMove}
+        onPointerDown={handleMouseDown}
+      />
       {editable ? (
         <>
           <div className="mapcharttips">{scale}</div>
           <div className="mapcharttips2">{JSON.stringify(translate)}</div>
         </>
+      ) : null}
+      {popover && popover.country !== "1" ? (
+        <div
+          className="mapchartpopover"
+          style={{
+            left: `calc(${popover.x * scale}% + ${
+              (translate.x / 4016) * 100
+            }%)`,
+            top: `calc(${popover.y * scale}% + ${(translate.y / 2160) * 100}%)`,
+          }}
+        >
+          <div className="mapchartpopovericon">{flagMap[popover.country]}</div>
+          {popover.title || popover.country}
+        </div>
       ) : null}
       {pinPosition?.map((pin, i) => (
         <div
@@ -387,9 +428,15 @@ const MapChart: React.FC<MapChartProps> = (props) => {
           style={{
             left: `calc(${pin.x * scale}% + ${(translate.x / 4016) * 100}%)`,
             top: `calc(${pin.y * scale}% + ${(translate.y / 2160) * 100}%)`,
+            zIndex: popover?.country === pin.country ? 999 : 99,
+            color:
+              popover?.country === pin.country ? highLightColor : baseColor,
           }}
           onClick={(ev) => {
             ev.stopPropagation();
+            if (pin.country === popover?.country) return;
+
+            setPopover({ ...pin });
             if (onPinClick) onPinClick(pin);
             if (editable) {
               setPinPosition((draft) => {
@@ -405,7 +452,7 @@ const MapChart: React.FC<MapChartProps> = (props) => {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                fill={highLightColor}
+                fill="currentcolor"
                 d="m29.29,14.89q0,7.87 -14.3,28.94q-14.29,-21.07 -14.29,-28.94c0,-7.88 6.4,-14.26 14.29,-14.26c7.9,0 14.3,6.38 14.3,14.26z"
               />
               <ellipse
@@ -419,16 +466,6 @@ const MapChart: React.FC<MapChartProps> = (props) => {
           )}
         </div>
       ))}
-      <canvas
-        ref={canvasRef}
-        width={1004 * INCREASE}
-        height={540 * INCREASE}
-        className="mapchartcanvas"
-        onMouseLeave={handleMouseUp}
-        onPointerUp={handleMouseUp}
-        onPointerMove={handleMouseMove}
-        onPointerDown={handleMouseDown}
-      />
     </div>
   );
 };

@@ -29,6 +29,33 @@
   --tw-translate-x: -50%;
   transform: translate(-50%, -100%) rotate(0) skewX(0) skewY(0) scaleX(1)
     scaleY(1);
+  filter: drop-shadow(4px 16px 6px rgba(0, 0, 10, 0.2));
+}
+.mapchartpopover {
+  position: absolute;
+  transform: translate(5px, -68px);
+  z-index: 100;
+  color: white;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 8px 16px;
+  background-color: #1a1c1a;
+  border-radius: 8px;
+}
+.mapchartpopovericon {
+  width: 32px;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 16px;
+}
+.mapchartpinshadow {
+  width: 32px;
+  border-radius: 99999px;
+  height: 70px;
+  position: absolute;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.08), transparent);
 }
 @media (max-width: 640px) {
   .mapchartpin {
@@ -38,5 +65,25 @@
     --tw-translate-x: -50%;
     transform: translate(-50%, -100%) rotate(0) skewX(0) skewY(0) scaleX(1)
       scaleY(1);
+    filter: drop-shadow(4px 16px 6px rgba(0, 0, 10, 0.2));
+  }
+  .mapchartpopover {
+    position: absolute;
+    transform: translate(5px, -68px);
+    z-index: 100;
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    padding: 4px 8px;
+    background-color: #1a1c1a;
+    border-radius: 8px;
+  }
+  .mapchartpopovericon {
+    width: 16px;
+    height: 12px;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-right: 8px;
   }
 }
