@@ -1,0 +1,26 @@
+<html>
+
+<body>
+    <link rel="stylesheet" href="../dist/style.css">
+    <div id="my-component-root"></div>
+    <!-- 引入 React 和 ReactDOM -->
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="../dist/mapchart.umd.js"></script>
+    <!-- <script src="https://mapchart.pages.dev/mapchart.umd.js"></script> -->
+    <script>
+        const rootElement = document.getElementById('my-component-root');
+        ReactDOM.render(React.createElement(MapChart, {
+            // editable: false,
+            highLightColor: "#4D8359",
+            baseColor: "#E3E3DF",
+            defaultSelect: "US",
+
+            onPinClick: (value) => {
+                console.log(value)
+            }
+        }), rootElement);
+    </script>
+</body>
+
+</html>

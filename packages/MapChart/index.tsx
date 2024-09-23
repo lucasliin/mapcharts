@@ -4,9 +4,7 @@ import { worldData } from "./worldData";
 import { drawPolygon, flagMap, INCREASE } from "./util";
 import "./index.css";
 
-/** //- 画布偏移量*/
 const CANVAS_OFFSET = 5;
-/** //- 图形尺寸,在正方形时是宽高,其他图形为半径（中心点到顶点的距离）*/
 const SHAPE_SIZE = 5;
 const MAX_ZOOM = 5;
 const MIN_ZOOM = 1;
@@ -55,31 +53,25 @@ const MapChart: React.FC<MapChartProps> = (props) => {
   } = props;
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  //- 控制鼠标滑轮放大
   const [scale, setScale] = useState(1);
   const scaleRef = useRef(1);
-  //- 控制拖拽偏移量
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const translateRef = useRef({ x: 0, y: 0 });
-  //- 判断是否处于拖拽状态
   const [isDragging, setIsDragging] = useState(false);
-  //- 记录鼠标位置
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [startTime, setStartTime] = useState(0);
-  //- 鼠标移动距离的阈值,单位为像素
   const clickThreshold = 5;
-  //- 时间阈值,单位为毫秒
   const timeThreshold = 200;
 
-  const [pointers, setPointers] = useState<React.PointerEvent[]>([]); // 当前的指针列表
-  const [initialDistance, setInitialDistance] = useState<number | null>(null); // 双指初始距离
+  const [pointers, setPointers] = useState<React.PointerEvent[]>([]);
+  const [initialDistance, setInitialDistance] = useState<number | null>(null);
 
-  //- 地图位置信息
   const [data, setData] = useState(worldData);
-  //- 标记位置信息
   const [pinPosition, setPinPosition] = useImmer<Pin[]>([]);
 
-  const [popover, setPopover] = useImmer<null | Pin>(null);
+  const [activePin, setActivePin] = useImmer<
+    null | (Pin & { position: "left" | "right" })
+  >(null);
 
   const drawShape = (
     ctx: CanvasRenderingContext2D,
@@ -88,12 +80,10 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     isHighLight?: boolean
   ) => {
     if (nodeShape === "1") {
-      //* 圆形
       ctx.beginPath();
       ctx.arc(x, y, 3 * INCREASE, 0, Math.PI * 2);
       ctx.closePath();
     } else if (nodeShape === "2") {
-      //* 正方形
       ctx.fillStyle = isHighLight ? highLightColor : baseColor;
       ctx.fillRect(
         x,
@@ -103,20 +93,16 @@ const MapChart: React.FC<MapChartProps> = (props) => {
       );
       return;
     } else if (nodeShape === "3" || nodeShape === "5") {
-      //* 三角 & 五边形
       drawPolygon(ctx, parseInt(nodeShape), x, y, -Math.PI / 2);
     } else if (nodeShape === "4") {
-      //* 菱形
       drawPolygon(ctx, 4, x, y);
     } else if (nodeShape === "6") {
-      //* 六边形
       drawPolygon(ctx, 6, x, y, 10);
     }
     ctx.fillStyle = isHighLight ? highLightColor : baseColor;
     ctx.fill();
   };
 
-  //- 限制拖拽偏移量
   const limitTranslate = (prevOffset: { x: number; y: number }) => {
     if (!canvasRef.current) return prevOffset;
     const maxTranslateX =
@@ -130,7 +116,6 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     };
   };
 
-  //- 画布修改
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -157,7 +142,6 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scale, translate, data, nodeShape]);
 
-  //- 添加默认高亮
   useEffect(() => {
     setData(
       worldData.map((item, index) => ({
@@ -169,22 +153,30 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapData]);
 
-  //- 滚轮缩放
+  function updateScale(plus?: boolean) {
+    scaleRef.current = Math.max(
+      MIN_ZOOM,
+      Math.min(
+        (plus
+          ? scaleRef.current * 1000 - ZOOM_RATIO * 1000
+          : scaleRef.current * 1000 + ZOOM_RATIO * 1000) / 1000,
+        MAX_ZOOM
+      )
+    );
+
+    if (scaleRef.current === 1) {
+      canvasRef.current?.style.removeProperty("touch-action");
+    } else {
+      canvasRef.current?.style.setProperty("touch-action", "none");
+    }
+    setScale(scaleRef.current);
+  }
+
   useEffect(() => {
     function onWheel(this: HTMLCanvasElement, ev: WheelEvent) {
       if (!editable && !enableZoom) return;
       ev.preventDefault();
-      scaleRef.current = Math.max(
-        MIN_ZOOM,
-        Math.min(
-          (ev.deltaY > 0
-            ? scaleRef.current * 1000 - ZOOM_RATIO * 1000
-            : scaleRef.current * 1000 + ZOOM_RATIO * 1000) / 1000,
-          MAX_ZOOM
-        )
-      );
-      setScale(scaleRef.current);
-      //! 判断当前的偏移量是否超出
+      updateScale(ev.deltaY > 0);
       if (!canvasRef.current) return;
       const maxTranslateX =
         canvasRef.current.width * scaleRef.current - canvasRef.current.width;
@@ -220,23 +212,22 @@ const MapChart: React.FC<MapChartProps> = (props) => {
   useEffect(() => {
     setTimeout(() => {
       if (!defaultSelect) return;
-      const ele = mapData?.pins.find((v) => v.country === defaultSelect);
-      if (!ele) return;
-      setPopover({ ...ele });
+      const pin = mapData?.pins.find((v) => v.country === defaultSelect);
+      if (!pin) return;
+      setActivePin({ ...pin, position: pin.x > 70 ? "left" : "right" });
     }, 250);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultSelect]);
 
-  //- 鼠标按下
   const handleMouseDown = (ev: React.PointerEvent<HTMLCanvasElement>) => {
     if (!editable && !enablePan) return;
+    if (scale === 1) return;
     setPointers((prev) => [...prev, ev]);
     setStartPos({ x: ev.clientX, y: ev.clientY });
     setStartTime(new Date().getTime());
     setIsDragging(false);
   };
 
-  //- 计算两指间的距离
   const getDistance = (
     pointer1: React.PointerEvent,
     pointer2: React.PointerEvent
@@ -246,7 +237,6 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     return Math.sqrt(dx * dx + dy * dy);
   };
 
-  //- 鼠标移动
   const handleMouseMove = (ev: React.PointerEvent<HTMLCanvasElement>) => {
     if (!startTime) return;
     setPointers((prevPointers) =>
@@ -256,26 +246,15 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     setStartPos({ x: ev.clientX, y: ev.clientY });
 
     if (pointers.length === 2) {
-      // 检测到双指操作
       const [pointer1, pointer2] = pointers;
 
       const currentDistance = getDistance(pointer1, pointer2);
-      //! 快速连续拖拽时 state 未能及时同步导致 NaN
       if (isNaN(currentDistance)) return;
       if (initialDistance !== null && !isNaN(initialDistance)) {
         const distanceDiff = currentDistance - initialDistance;
-        //! 计算缩放增量，每移动 30 像素，调整缩放比例
         if (Math.abs(distanceDiff) >= 30) {
-          const scaleChange = distanceDiff > 0 ? ZOOM_RATIO : -ZOOM_RATIO;
-          scaleRef.current = Math.max(
-            MIN_ZOOM,
-            Math.min(
-              (scaleRef.current * 1000 + scaleChange * 1000) / 1000,
-              MAX_ZOOM
-            )
-          );
-          setScale(scaleRef.current);
-          setInitialDistance(currentDistance); // 重置初始距离
+          updateScale(distanceDiff > 0);
+          setInitialDistance(currentDistance);
         }
       } else {
         setInitialDistance(currentDistance);
@@ -288,10 +267,9 @@ const MapChart: React.FC<MapChartProps> = (props) => {
       );
 
       if (distance > clickThreshold) {
-        setIsDragging(true); // 如果移动距离大于阈值,标记为拖拽
+        setIsDragging(true);
       }
 
-      //* 处理拖拽
       const dx = ev.clientX - startPos.x;
       const dy = ev.clientY - startPos.y;
 
@@ -300,14 +278,12 @@ const MapChart: React.FC<MapChartProps> = (props) => {
         x: translateRef.current.x + dx * (window.innerWidth <= 600 ? 10 : 1),
         y: translateRef.current.y + dy * (window.innerWidth <= 600 ? 10 : 1),
       });
-      // setValue(dx);
       setTranslate(translateRef.current);
 
       setStartPos({ x: ev.clientX, y: ev.clientY });
     }
   };
 
-  //- 鼠标抬起
   const handleMouseUp = (ev: React.PointerEvent<HTMLCanvasElement>) => {
     setPointers([]);
     setInitialDistance(null);
@@ -323,27 +299,15 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     }
   };
 
-  //- 点击高亮元素,alt + 点击 添加 pin
   const handleCanvasClick = (x: number, y: number, altKey: boolean) => {
     if (isDragging) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const canvasRect = canvas.getBoundingClientRect();
-    //* 鼠标点击位置 = 点击的位置 - 画布左/上距离窗口的距离
     const mouseX = x - canvasRect.left;
     const mouseY = y - canvasRect.top;
 
-    /**
-     * mouseX: 鼠标点击位置
-     * canvasRect.width: 画布元素（DOM 节点）宽度
-     * ! mouseX / canvasRect.width => 点击位置在画布的比例
-     * translate.x: 拖动偏移量
-     * canvas.width: 画布宽度（这里是画布的宽度,不是画布元素宽度,值为 4016）
-     * ! translate.x / canvas.width => 偏移量对于画布的比例
-     * 1004: 原始画布宽度（画布比例经过放大去适配4k,这里使用原始宽度：1004）
-     * scale: 缩放倍数
-     */
     const offsetX =
       ((mouseX / canvasRect.width - translate.x / canvas.width) * 1004) / scale;
     const offsetY =
@@ -406,18 +370,27 @@ const MapChart: React.FC<MapChartProps> = (props) => {
           <div className="mapcharttips2">{JSON.stringify(translate)}</div>
         </>
       ) : null}
-      {popover && popover.country !== "1" ? (
+      {activePin && activePin.country !== "1" ? (
         <div
-          className="mapchartpopover"
+          className={
+            activePin.position == "left"
+              ? "mapchartpopover1"
+              : "mapchartpopover2"
+          }
           style={{
-            left: `calc(${popover.x * scale}% + ${
+            left: `calc(${activePin.x * scale}% + ${
               (translate.x / 4016) * 100
             }%)`,
-            top: `calc(${popover.y * scale}% + ${(translate.y / 2160) * 100}%)`,
+            top: `calc(${activePin.y * scale}% + ${
+              (translate.y / 2160) * 100
+            }%)`,
+            whiteSpace: "nowrap",
           }}
         >
-          <div className="mapchartpopovericon">{flagMap[popover.country]}</div>
-          {popover.title || popover.country}
+          <div className="mapchartpopovericon">
+            {flagMap[activePin.country]}
+          </div>
+          {activePin.title || activePin.country}
         </div>
       ) : null}
       {pinPosition?.map((pin, i) => (
@@ -428,21 +401,29 @@ const MapChart: React.FC<MapChartProps> = (props) => {
           style={{
             left: `calc(${pin.x * scale}% + ${(translate.x / 4016) * 100}%)`,
             top: `calc(${pin.y * scale}% + ${(translate.y / 2160) * 100}%)`,
-            zIndex: popover?.country === pin.country ? 999 : 99,
+            zIndex: activePin?.country === pin.country ? 999 : 99,
             color:
-              popover?.country === pin.country ? highLightColor : baseColor,
+              activePin?.country === pin.country ? highLightColor : baseColor,
+          }}
+          onDoubleClick={() => {
+            if (!editable) return;
+            setPinPosition((draft) => {
+              draft.splice(i, 1);
+            });
+            setActivePin(null);
           }}
           onClick={(ev) => {
             ev.stopPropagation();
-            if (pin.country === popover?.country) return;
+            if (pin.country === activePin?.country) return;
 
-            setPopover({ ...pin });
+            setActivePin({
+              ...pin,
+              position:
+                pin.x * scale + (translate.x / 4016) * 100 > 75
+                  ? "left"
+                  : "right",
+            });
             if (onPinClick) onPinClick(pin);
-            if (editable) {
-              setPinPosition((draft) => {
-                draft.splice(i, 1);
-              });
-            }
           }}
         >
           {pinSVG ?? (

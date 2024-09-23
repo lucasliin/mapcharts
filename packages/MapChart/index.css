@@ -20,18 +20,29 @@
 }
 .mapchartcanvas {
   width: 100%;
-  touch-action: none;
+  /* touch-action: none; */
 }
 .mapchartpin {
   width: 30px;
   height: 44px;
   position: absolute;
-  --tw-translate-x: -50%;
   transform: translate(-50%, -100%) rotate(0) skewX(0) skewY(0) scaleX(1)
     scaleY(1);
   filter: drop-shadow(4px 16px 6px rgba(0, 0, 10, 0.2));
 }
-.mapchartpopover {
+.mapchartpopover1 {
+  position: absolute;
+  transform: translate(-100%, -68px);
+  z-index: 100;
+  color: white;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 8px 16px;
+  background-color: #1a1c1a;
+  border-radius: 8px;
+}
+.mapchartpopover2 {
   position: absolute;
   transform: translate(5px, -68px);
   z-index: 100;
@@ -67,9 +78,21 @@
       scaleY(1);
     filter: drop-shadow(4px 16px 6px rgba(0, 0, 10, 0.2));
   }
-  .mapchartpopover {
+  .mapchartpopover1 {
     position: absolute;
-    transform: translate(5px, -68px);
+    transform: translate(-100%, -30px);
+    z-index: 100;
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    padding: 4px 8px;
+    background-color: #1a1c1a;
+    border-radius: 8px;
+  }
+  .mapchartpopover2 {
+    position: absolute;
+    transform: translate(0px, -30px);
     z-index: 100;
     color: white;
     display: flex;
