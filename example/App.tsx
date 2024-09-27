@@ -8,10 +8,10 @@ const App: React.FC = () => {
         <MapChart
           enableZoom
           enablePan
-          editable={false}
+          // editable={false}
           highLightColor="#4D8359"
           baseColor="#E3E3DF"
-          defaultSelect="US"
+          defaultSelect="Us"
           mapData={{
             pins: [
               {
@@ -40,23 +40,20 @@ const App: React.FC = () => {
               {
                 x: 48.52272548163239,
                 y: 35.63375749637386,
-                country: "Germany",
+                country: "France",
               },
               {
-                x: 52.727274258274626,
+                x: 52.57274258274626,
                 y: 39.54244784974591,
-                country: "Ukraine",
+                country: "Italy",
               },
               {
                 x: 51.98863618630024,
                 y: 32.57019513227865,
-                country: "1",
+                country: "Germany",
               },
             ],
-            highlights: [
-              4736, 2260, 3251, 4937, 2669, 2952, 2645, 2646, 2743, 2742, 2741,
-              2835, 2836, 1024,
-            ],
+            highlights: [4736, 2260, 3251, 4937, 2669, 2952, 2742, 1024, 2375],
           }}
         />
       </div>

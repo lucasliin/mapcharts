@@ -212,7 +212,9 @@ const MapChart: React.FC<MapChartProps> = (props) => {
   useEffect(() => {
     setTimeout(() => {
       if (!defaultSelect) return;
-      const pin = mapData?.pins.find((v) => v.country === defaultSelect);
+      const pin = mapData?.pins.find(
+        (v) => v.country.toLowerCase() === defaultSelect.toLowerCase()
+      );
       if (!pin) return;
       setActivePin({ ...pin, position: pin.x > 70 ? "left" : "right" });
     }, 250);
@@ -295,6 +297,7 @@ const MapChart: React.FC<MapChartProps> = (props) => {
     //* 如果移动距离小于阈值,并且时间小于阈值,认定为点击
     if (!isDragging && timeElapsed < timeThreshold && pointers.length < 2) {
       if (!editable) return;
+      console.log("click");
       handleCanvasClick(ev.clientX, ev.clientY, ev.altKey);
     }
   };
