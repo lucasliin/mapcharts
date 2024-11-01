@@ -18,8 +18,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "packages/index.ts"),
-      name: "MapChart",
-      fileName: (format) => `mapchart.${format}.js`,
+      name: "RichText",
+      fileName: (format) => `richtext.${format}.js`,
       formats: ["umd"],
     },
     rollupOptions: {

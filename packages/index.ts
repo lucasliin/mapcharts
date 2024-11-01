@@ -1,3 +1,3 @@
-import MapChart from "./MapChart";
+import RichText from "./RichText";
 
-export default MapChart;
+export default RichText;
