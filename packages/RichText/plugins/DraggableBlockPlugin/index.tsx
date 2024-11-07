@@ -3,10 +3,10 @@ import { useRef } from 'react';
 
 import { IconDraggableBlockMenu } from '../../icons';
 
-const DRAGGABLE_BLOCK_MENU_CLASSNAME = 'draggable-block-menu';
-
 function isOnMenu(element: HTMLElement): boolean {
-  return !!element.closest(`.${DRAGGABLE_BLOCK_MENU_CLASSNAME}`);
+  return !!element.closest(
+    'w-[16px] h-[16px] opacity-30 active:cursor-grabbing hover:bg-[#efefef]'
+  );
 }
 
 const DraggableBlockPlugin: React.FC<{
@@ -17,15 +17,15 @@ const DraggableBlockPlugin: React.FC<{
 
   return (
     <DraggableBlockPlugin_EXPERIMENTAL
-      anchorElem={anchorElem}
       menuRef={menuRef}
+      anchorElem={anchorElem}
       targetLineRef={targetLineRef}
       menuComponent={
         <div
           ref={menuRef}
           className="rounded px-px py-0.5 cursor-grab opacity-0 absolute left-0 top-0 will-change-transform"
         >
-          <div className="w-4 h-4 opacity-30 active:cursor-grabbing hover:bg-[#efefef]">
+          <div className="w-[16px] h-[16px] opacity-30 active:cursor-grabbing hover:bg-[#efefef]">
             <IconDraggableBlockMenu />
           </div>
         </div>

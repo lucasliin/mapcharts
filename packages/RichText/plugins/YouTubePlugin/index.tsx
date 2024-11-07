@@ -1,27 +1,27 @@
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $insertNodeToNearestRoot } from '@lexical/utils';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $insertNodeToNearestRoot } from "@lexical/utils";
 import {
   COMMAND_PRIORITY_EDITOR,
   createCommand,
   LexicalCommand,
   LexicalEditor,
-} from 'lexical';
-import { useEffect, useRef, useState } from 'react';
+} from "lexical";
+import { useEffect, useRef, useState } from "react";
 
-import { $createYouTubeNode, YouTubeNode } from '../../nodes/YouTubeNode';
-import TextInput from '../../components/TextInput';
-import { DialogActions } from '../../components/Dialog';
+import { $createYouTubeNode, YouTubeNode } from "../../nodes/YouTubeNode";
+import TextInput from "../../components/TextInput";
+import { DialogActions } from "../../components/Dialog";
 
 export const INSERT_YOUTUBE_COMMAND: LexicalCommand<string> = createCommand(
-  'INSERT_YOUTUBE_COMMAND'
+  "INSERT_YOUTUBE_COMMAND"
 );
 
 export const InsetYouTubeDialog: React.FC<{
   activeEditor: LexicalEditor;
   onClose: () => void;
 }> = ({ activeEditor, onClose }) => {
-  const [url, setUrl] = useState('');
-  const [error, setError] = useState('');
+  const [url, setUrl] = useState("");
+  const [error, setError] = useState("");
   const hasModifier = useRef(false);
 
   useEffect(() => {
@@ -29,9 +29,9 @@ export const InsetYouTubeDialog: React.FC<{
     const handler = (e: KeyboardEvent) => {
       hasModifier.current = e.altKey;
     };
-    document.addEventListener('keydown', handler);
+    document.addEventListener("keydown", handler);
     return () => {
-      document.removeEventListener('keydown', handler);
+      document.removeEventListener("keydown", handler);
     };
   }, [activeEditor]);
 
@@ -44,7 +44,7 @@ export const InsetYouTubeDialog: React.FC<{
       activeEditor.dispatchCommand(INSERT_YOUTUBE_COMMAND, id);
       onClose();
     } else {
-      setError('请输入正确的YouTube链接');
+      setError("请输入正确的YouTube链接");
     }
   };
 
@@ -55,17 +55,17 @@ export const InsetYouTubeDialog: React.FC<{
           value={url}
           onChange={setUrl}
           placeholder="https://www.youtube.com/watch?v="
-          className={error ? '!border-red-500 outline-red-500' : ''}
+          className={error ? "!border-red-500 outline-red-500" : ""}
         />
         {error ? (
-          <div className="mt-1.5 text-xs text-red-500">{error}</div>
+          <div className="mt-1.5 text-[12px] text-red-500">{error}</div>
         ) : null}
       </div>
       <DialogActions>
         <button
           onClick={() => onClick()}
-          disabled={url.trim() === ''}
-          className="px-3 py-2 rounded-md cursor-pointer disabled:cursor-not-allowed disabled:text-gray-300 text-primary hover:bg-primary/10"
+          disabled={url.trim() === ""}
+          className="px-3 py-2 rounded-md cursor-pointer disabled:cursor-not-allowed disabled:text-gray-300 text-blue-500 hover:bg-blue-500/10"
         >
           确定
         </button>
@@ -79,7 +79,7 @@ export default function YouTubePlugin(): JSX.Element | null {
 
   useEffect(() => {
     if (!editor.hasNodes([YouTubeNode])) {
-      throw new Error('YouTubePlugin: YouTubeNode not registered on editor');
+      throw new Error("YouTubePlugin: YouTubeNode not registered on editor");
     }
 
     return editor.registerCommand<string>(

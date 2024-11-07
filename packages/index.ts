@@ -1,3 +1,3 @@
-import RichText from "./RichText";
+import LexicalRichTextEditor from "./RichText";
 
-export default RichText;
+export default LexicalRichTextEditor;

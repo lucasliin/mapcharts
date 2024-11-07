@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = (props) => {
       disabled={disabled}
       className={clsx(
         'border-none bg-[#eee] rounded cursor-pointer hover:bg-[#ddd] disabled:cursor-not-allowed disabled:hover:bg-[#eee]',
-        small ? 'py-1 px-2.5 text-xs' : 'py-2.5 px-4 text-[14px]',
+        small ? 'py-1 px-2.5 text-[12px]' : 'py-2.5 px-4 text-[14px]',
         className
       )}
       onClick={onClick}

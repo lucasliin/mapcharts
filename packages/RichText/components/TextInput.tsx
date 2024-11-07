@@ -1,5 +1,5 @@
-import clsx from 'clsx';
-import React, { HTMLInputTypeAttribute } from 'react';
+import clsx from "clsx";
+import React, { HTMLInputTypeAttribute } from "react";
 
 interface TextInputProps {
   label?: string;
@@ -16,8 +16,8 @@ const TextInput: React.FC<TextInputProps> = (props) => {
     value,
     onChange,
     className,
-    type = 'text',
-    placeholder = '',
+    type = "text",
+    placeholder = "",
   } = props;
 
   return (
@@ -25,7 +25,7 @@ const TextInput: React.FC<TextInputProps> = (props) => {
       {label ? (
         <label
           className={clsx(
-            'flex flex-1 text-[#666] whitespace-nowrap items-center',
+            "flex flex-1 text-[#666] whitespace-nowrap items-center",
             'after:content-[":"] ms-0.5 me-2'
           )}
         >
@@ -38,9 +38,9 @@ const TextInput: React.FC<TextInputProps> = (props) => {
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         className={clsx(
-          'border border-solid border-[#d9d9d9] outline-none py-1 px-3 rounded-md placeholder:text-gray-300 w-full min-w-[250px]',
-          'hover:border-primary',
-          'focus:border-primary focus:shadow-[0_0_0_2px_rgba(5,145,255,0.1)]',
+          "border border-solid border-[#d9d9d9] outline-none py-1 px-3 rounded-md placeholder:text-gray-300 w-full min-w-[250px]",
+          "hover:border-blue-500",
+          "focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(5,145,255,0.1)]",
           className
         )}
       />

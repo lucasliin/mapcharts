@@ -14,13 +14,11 @@ import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { CAN_USE_DOM } from "@lexical/utils";
 
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
-import TreeViewPlugin from "./plugins/TreeViewPlugin";
 import theme from "./themes/CommentEditorTheme";
 import { useSharedHistoryContext } from "./context/SharedHistoryContext";
 import { useSettings } from "./context/SettingsContext";
 import PlaygroundNodes from "./nodes/PlaygroundNodes";
 import PageBreakPlugin from "./plugins/PageDividerPlugin";
-import DraggableBlockPlugin from "./plugins/DraggableBlockPlugin";
 import LexicalContentEditable from "./components/ContentEditable";
 import EmojisPlugin from "./plugins/EmojisPlugin";
 import NewMentionsPlugin from "./plugins/MentionsPlugin";
@@ -29,21 +27,65 @@ import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
 import LinkPlugin from "./plugins/LinkPlugin";
 import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextFormatToolbarPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
+import SerializationPlugin from "./plugins/SerializationPlugin";
+import {
+  $createParagraphNode,
+  $getRoot,
+  $isDecoratorNode,
+  $isElementNode,
+  LexicalEditor,
+} from "lexical";
+import { $generateNodesFromDOM } from "@lexical/html";
 
-const RichTextV3: React.FC = () => {
+export interface LexicalRichTextEditorProps {
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+}
+
+const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
+  const { defaultValue, onChange } = props;
+
   const { historyState } = useSharedHistoryContext();
   const {
     settings: { isCharLimit, isCharLimitUtf8 },
   } = useSettings();
 
+  function prepopulatedRichText(params: {
+    value: string;
+    editor: LexicalEditor;
+  }) {
+    return params.editor.update(() => {
+      const root = $getRoot();
+
+      const document = new DOMParser().parseFromString(
+        params.value,
+        "text/html"
+      );
+      const generatedNodes = $generateNodesFromDOM(params.editor, document);
+      const nodes = generatedNodes.map((node) => {
+        if (!$isElementNode(node) && !$isDecoratorNode(node)) {
+          const p = $createParagraphNode();
+          p.append(node);
+          return p;
+        }
+
+        return node;
+      });
+      root.append(...nodes);
+    });
+  }
+
   const initialConfig = {
+    editorState:
+      defaultValue !== undefined
+        ? (editor: LexicalEditor) =>
+            prepopulatedRichText({ value: defaultValue!, editor })
+        : undefined,
     namespace: "Lexical Demo",
     nodes: [...PlaygroundNodes],
-    // Handling of errors during update
     onError(error: Error) {
       throw error;
     },
-    // The editor theme
     theme: theme,
   };
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
@@ -81,12 +123,14 @@ const RichTextV3: React.FC = () => {
     <LexicalComposer initialConfig={initialConfig}>
       <div className="my-5 rounded-lg border-[#e2e2e2] border-solid border w-full text-black relative text-left">
         <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
+        {/* {isMaxLength && <MaxLengthPlugin maxLength={30} />} */}
         <AutoFocusPlugin />
         <ClearEditorPlugin />
 
         <NewMentionsPlugin />
         <EmojisPlugin />
         <HashtagPlugin />
+        {/* <EmojiPickerPlugin /> */}
 
         <div className="relative bg-white">
           <RichTextPlugin
@@ -99,7 +143,14 @@ const RichTextV3: React.FC = () => {
             }
             ErrorBoundary={LexicalErrorBoundary}
           />
-
+          {/* {isCollab ? (
+              <CollaborationPlugin
+                id="main"
+                providerFactory={createWebsocketProvider}
+                shouldBootstrap={!skipCollaborationInit}
+              />
+            ) : (
+            )} */}
           <ImagesPlugin />
           <HistoryPlugin externalHistoryState={historyState} />
 
@@ -108,15 +159,12 @@ const RichTextV3: React.FC = () => {
           <ClickableLinkPlugin />
           <HorizontalRulePlugin />
 
-          <TreeViewPlugin />
-
           <PageBreakPlugin />
           <LinkPlugin />
           <YouTubePlugin />
 
           {floatingAnchorElem && !isSmallWidthViewport && (
             <>
-              <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
               <FloatingLinkEditorPlugin
                 anchorElem={floatingAnchorElem}
                 isLinkEditMode={isLinkEditMode}
@@ -128,7 +176,9 @@ const RichTextV3: React.FC = () => {
               />
             </>
           )}
-
+          <SerializationPlugin
+            onChange={(value) => onChange && onChange(value)}
+          />
           {(isCharLimit || isCharLimitUtf8) && (
             <CharacterLimitPlugin
               charset={isCharLimit ? "UTF-16" : "UTF-8"}
@@ -141,4 +191,4 @@ const RichTextV3: React.FC = () => {
   );
 };
 
-export default RichTextV3;
+export default LexicalRichTextEditor;

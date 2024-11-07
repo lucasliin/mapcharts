@@ -1,6 +1,6 @@
-import clsx from 'clsx';
-import { first } from 'lodash';
-import React, { useState } from 'react';
+import clsx from "clsx";
+import { first } from "lodash";
+import React, { useState } from "react";
 
 interface FileInputProps {
   label: string;
@@ -18,7 +18,7 @@ const FileInput: React.FC<FileInputProps> = (props) => {
     <>
       <label
         className={clsx(
-          'flex flex-1 text-[#666] whitespace-nowrap items-center',
+          "flex flex-1 text-[#666] whitespace-nowrap items-center",
           'after:content-[":"] ms-0.5 me-2'
         )}
       >
@@ -26,9 +26,9 @@ const FileInput: React.FC<FileInputProps> = (props) => {
       </label>
       <div
         onClick={() => inputRef.current?.click()}
-        className="rounded-md border-solid border border-[#d9d9d9] text-gray-300 py-1 px-3 hover:border-primary hover:text-primary cursor-pointer w-full whitespace-nowrap"
+        className="rounded-md border-solid border border-[#d9d9d9] text-gray-300 py-1 px-3 hover:border-blue-500 hover:text-blue-500 cursor-pointer w-full whitespace-nowrap"
       >
-        {fileName || '选择文件'}
+        {fileName || "选择文件"}
       </div>
       <input
         type="file"

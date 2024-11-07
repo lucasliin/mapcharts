@@ -1,7 +1,7 @@
-import type { LexicalEditor } from 'lexical';
-import { calculateZoomLevel } from '@lexical/utils';
-import React, { useRef } from 'react';
-import clsx from 'clsx';
+import type { LexicalEditor } from "lexical";
+import { calculateZoomLevel } from "@lexical/utils";
+import React, { useRef } from "react";
+import clsx from "clsx";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -18,7 +18,7 @@ interface ImageResizerProps {
   editor: LexicalEditor;
   imageRef: { current: null | HTMLElement };
   maxWidth?: number;
-  onResizeEnd: (width: 'inherit' | number, height: 'inherit' | number) => void;
+  onResizeEnd: (width: "inherit" | number, height: "inherit" | number) => void;
   onResizeStart: () => void;
   resizeDirections?: { x: boolean; y: boolean };
 }
@@ -33,15 +33,15 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
     resizeDirections = { x: true, y: true },
   } = props;
   const imageResizerClass =
-    'block w-1.5 h-1.5 rounded-full bg-white outline outline-solid absolute outline-[--primary-color] border border-solid border-white';
+    "block w-1.5 h-1.5 rounded-full bg-white outline outline-solid absolute outline-blue-500 border border-solid border-white";
   const controlWrapperRef = useRef<HTMLDivElement>(null);
   const userSelect = useRef({
-    priority: '',
-    value: 'default',
+    priority: "",
+    value: "default",
   });
   const positioningRef = useRef<{
-    currentHeight: 'inherit' | number;
-    currentWidth: 'inherit' | number;
+    currentHeight: "inherit" | number;
+    currentWidth: "inherit" | number;
     direction: number;
     isResizing: boolean;
     ratio: number;
@@ -82,43 +82,43 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
       (direction & Direction.north && direction & Direction.west) ||
       (direction & Direction.south && direction & Direction.east);
 
-    const cursorDir = ew ? 'ew' : ns ? 'ns' : nwse ? 'nwse' : 'nesw';
+    const cursorDir = ew ? "ew" : ns ? "ns" : nwse ? "nwse" : "nesw";
 
     if (editorRootElement !== null) {
       editorRootElement.style.setProperty(
-        'cursor',
+        "cursor",
         `${cursorDir}-resize`,
-        'important'
+        "important"
       );
     }
     if (document.body !== null) {
       document.body.style.setProperty(
-        'cursor',
+        "cursor",
         `${cursorDir}-resize`,
-        'important'
+        "important"
       );
       userSelect.current.value = document.body.style.getPropertyValue(
-        '-webkit-user-select'
+        "-webkit-user-select"
       );
       userSelect.current.priority = document.body.style.getPropertyPriority(
-        '-webkit-user-select'
+        "-webkit-user-select"
       );
       document.body.style.setProperty(
-        '-webkit-user-select',
+        "-webkit-user-select",
         `none`,
-        'important'
+        "important"
       );
     }
   };
 
   const setEndCursor = () => {
     if (editorRootElement !== null) {
-      editorRootElement.style.setProperty('cursor', 'text');
+      editorRootElement.style.setProperty("cursor", "text");
     }
     if (document.body !== null) {
-      document.body.style.setProperty('cursor', 'default');
+      document.body.style.setProperty("cursor", "default");
       document.body.style.setProperty(
-        '-webkit-user-select',
+        "-webkit-user-select",
         userSelect.current.value,
         userSelect.current.priority
       );
@@ -152,12 +152,12 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
       setStartCursor(direction);
       onResizeStart();
 
-      controlWrapper.classList.add('image-control-wrapper--resizing');
+      controlWrapper.classList.add("image-control-wrapper--resizing");
       image.style.height = `${height}px`;
       image.style.width = `${width}px`;
 
-      document.addEventListener('pointermove', handlePointerMove);
-      document.addEventListener('pointerup', handlePointerUp);
+      document.addEventListener("pointermove", handlePointerMove);
+      document.addEventListener("pointerup", handlePointerUp);
     }
   };
   const handlePointerMove = (event: PointerEvent) => {
@@ -229,13 +229,13 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
       positioning.currentHeight = 0;
       positioning.isResizing = false;
 
-      controlWrapper.classList.remove('image-control-wrapper--resizing');
+      controlWrapper.classList.remove("image-control-wrapper--resizing");
 
       setEndCursor();
       onResizeEnd(width, height);
 
-      document.removeEventListener('pointermove', handlePointerMove);
-      document.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerup", handlePointerUp);
     }
   };
   return (
@@ -244,7 +244,7 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
         <div
           className={clsx(
             imageResizerClass,
-            '-top-1 left-1/2 -translate-x-1/2 cursor-n-resize'
+            "-top-1 left-1/2 -translate-x-1/2 cursor-n-resize"
           )}
           onPointerDown={(event) => {
             handlePointerDown(event, Direction.north);
@@ -252,7 +252,7 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
         />
       ) : null}
       <div
-        className={clsx(imageResizerClass, '-top-1 -right-1 cursor-ne-resize')}
+        className={clsx(imageResizerClass, "-top-1 -right-1 cursor-ne-resize")}
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.north | Direction.east);
         }}
@@ -260,7 +260,7 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
       <div
         className={clsx(
           imageResizerClass,
-          'bottom-1/2 -translate-y-1/2 -right-1 cursor-e-resize'
+          "bottom-1/2 -translate-y-1/2 -right-1 cursor-e-resize"
         )}
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.east);
@@ -269,7 +269,7 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
       <div
         className={clsx(
           imageResizerClass,
-          '-bottom-1 -right-1 cursor-se-resize'
+          "-bottom-1 -right-1 cursor-se-resize"
         )}
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.south | Direction.east);
@@ -279,7 +279,7 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
         <div
           className={clsx(
             imageResizerClass,
-            '-bottom-1 left-1/2 -translate-x-1/2 cursor-s-resize'
+            "-bottom-1 left-1/2 -translate-x-1/2 cursor-s-resize"
           )}
           onPointerDown={(event) => {
             handlePointerDown(event, Direction.south);
@@ -289,7 +289,7 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
       <div
         className={clsx(
           imageResizerClass,
-          '-bottom-1 -left-1 cursor-swe-resize'
+          "-bottom-1 -left-1 cursor-swe-resize"
         )}
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.south | Direction.west);
@@ -298,14 +298,14 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
       <div
         className={clsx(
           imageResizerClass,
-          'bottom-1/2 -left-1 -translate-y-1/2 cursor-w-resize'
+          "bottom-1/2 -left-1 -translate-y-1/2 cursor-w-resize"
         )}
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.west);
         }}
       />
       <div
-        className={clsx(imageResizerClass, '-top-1 -left-1 cursor-nw-resize')}
+        className={clsx(imageResizerClass, "-top-1 -left-1 cursor-nw-resize")}
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.north | Direction.west);
         }}

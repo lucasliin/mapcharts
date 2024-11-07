@@ -1,18 +1,15 @@
 {
-  "name": "mapchart",
+  "name": "lexicalrichtexteditor",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.0.1",
   "type": "module",
-  "files": [
-    "lib"
-  ],
-  "main": "./dist/mapchart.umd.cjs",
-  "module": "./dist/mapchart.js",
+  "main": "./dist/lexicalrichtexteditor.umd.cjs",
+  "module": "./dist/lexicalrichtexteditor.js",
   "typings": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/mapchart.js",
-      "require": "./dist/mapchart.umd.js"
+      "import": "./dist/lexicalrichtexteditor.js",
+      "require": "./dist/lexicalrichtexteditor.umd.js"
     }
   },
   "scripts": {

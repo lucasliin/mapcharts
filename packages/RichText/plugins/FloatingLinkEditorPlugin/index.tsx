@@ -1,13 +1,13 @@
-import './index.css';
+import "./index.css";
 
 import {
   $createLinkNode,
   $isAutoLinkNode,
   $isLinkNode,
   TOGGLE_LINK_COMMAND,
-} from '@lexical/link';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $findMatchingParent, mergeRegister } from '@lexical/utils';
+} from "@lexical/link";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
   $getSelection,
   $isLineBreakNode,
@@ -20,20 +20,20 @@ import {
   KEY_ESCAPE_COMMAND,
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
-} from 'lexical';
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
-import * as React from 'react';
-import { createPortal } from 'react-dom';
+} from "lexical";
+import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
+import { createPortal } from "react-dom";
 
-import { getSelectedNode } from '../../utils/getSelectedNode';
-import { setFloatingElemPositionForLinkEditor } from '../../utils/setFloatingElemPositionForLinkEditor';
-import { sanitizeUrl } from '../../utils/url';
+import { getSelectedNode } from "../../utils/getSelectedNode";
+import { setFloatingElemPositionForLinkEditor } from "../../utils/setFloatingElemPositionForLinkEditor";
+import { sanitizeUrl } from "../../utils/url";
 import {
   IconClose,
   IconPencilFill,
   IconSuccessAlt,
   IconTrash,
-} from '../../icons';
+} from "../../icons";
 
 const FloatingLinkEditor: React.FC<{
   editor: LexicalEditor;
@@ -52,9 +52,9 @@ const FloatingLinkEditor: React.FC<{
 }) => {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [linkUrl, setLinkUrl] = useState('');
-  const [target, setTarget] = useState('');
-  const [editedLinkUrl, setEditedLinkUrl] = useState('https://');
+  const [linkUrl, setLinkUrl] = useState("");
+  const [target, setTarget] = useState("");
+  const [editedLinkUrl, setEditedLinkUrl] = useState("https://");
   const [lastSelection, setLastSelection] = useState<BaseSelection | null>(
     null
   );
@@ -67,13 +67,13 @@ const FloatingLinkEditor: React.FC<{
 
       if (linkParent) {
         setLinkUrl(linkParent.getURL());
-        setTarget(linkParent.getTarget() ?? '');
+        setTarget(linkParent.getTarget() ?? "");
       } else if ($isLinkNode(node)) {
         setLinkUrl(node.getURL());
-        setTarget(node.getTarget() ?? '');
+        setTarget(node.getTarget() ?? "");
       } else {
-        setLinkUrl('');
-        setTarget('');
+        setLinkUrl("");
+        setTarget("");
       }
       if (isLinkEditMode) {
         setEditedLinkUrl(linkUrl);
@@ -101,13 +101,13 @@ const FloatingLinkEditor: React.FC<{
         setFloatingElemPositionForLinkEditor(domRect, editorElem, anchorElem);
       }
       setLastSelection(selection);
-    } else if (!activeElement || activeElement.className !== 'link-input') {
+    } else if (!activeElement || activeElement.className !== "link-input") {
       if (rootElement !== null) {
         setFloatingElemPositionForLinkEditor(null, editorElem, anchorElem);
       }
       setLastSelection(null);
       setIsLinkEditMode(false);
-      setLinkUrl('');
+      setLinkUrl("");
     }
 
     return true;
@@ -122,17 +122,17 @@ const FloatingLinkEditor: React.FC<{
       });
     };
 
-    window.addEventListener('resize', update);
+    window.addEventListener("resize", update);
 
     if (scrollerElem) {
-      scrollerElem.addEventListener('scroll', update);
+      scrollerElem.addEventListener("scroll", update);
     }
 
     return () => {
-      window.removeEventListener('resize', update);
+      window.removeEventListener("resize", update);
 
       if (scrollerElem) {
-        scrollerElem.removeEventListener('scroll', update);
+        scrollerElem.removeEventListener("scroll", update);
       }
     };
   }, [anchorElem.parentElement, editor, $updateLinkEditor]);
@@ -182,10 +182,10 @@ const FloatingLinkEditor: React.FC<{
   const monitorInputInteraction = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
       handleLinkSubmission();
-    } else if (event.key === 'Escape') {
+    } else if (event.key === "Escape") {
       event.preventDefault();
       setIsLinkEditMode(false);
     }
@@ -193,7 +193,7 @@ const FloatingLinkEditor: React.FC<{
 
   const handleLinkSubmission = () => {
     if (lastSelection !== null) {
-      if (linkUrl !== '') {
+      if (linkUrl !== "") {
         editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
           url: sanitizeUrl(editedLinkUrl),
           target,
@@ -213,7 +213,7 @@ const FloatingLinkEditor: React.FC<{
           }
         });
       }
-      setEditedLinkUrl('https://');
+      setEditedLinkUrl("https://");
       setIsLinkEditMode(false);
     }
   };
@@ -255,9 +255,9 @@ const FloatingLinkEditor: React.FC<{
             <input
               type="checkbox"
               id="link-new-window"
-              checked={target === '_blank'}
+              checked={target === "_blank"}
               onChange={(event) => {
-                setTarget(event.target.checked ? '_blank' : '');
+                setTarget(event.target.checked ? "_blank" : "");
               }}
             />
             <label
@@ -282,7 +282,7 @@ const FloatingLinkEditor: React.FC<{
             <div
               role="button"
               tabIndex={0}
-              className="link-edit hover:text-primary"
+              className="link-edit hover:text-blue-500"
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => {
                 setEditedLinkUrl(linkUrl);
@@ -377,7 +377,7 @@ function useFloatingLinkEditorToolbar(
             const node = getSelectedNode(selection);
             const linkNode = $findMatchingParent(node, $isLinkNode);
             if ($isLinkNode(linkNode) && (payload.metaKey || payload.ctrlKey)) {
-              window.open(linkNode.getURL(), '_blank');
+              window.open(linkNode.getURL(), "_blank");
               return true;
             }
           }
