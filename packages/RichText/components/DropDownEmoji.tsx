@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   $createTextNode,
   $getSelection,
   $isRangeSelection,
   LexicalEditor,
-} from 'lexical';
+} from "lexical";
 
-import { IconEmojiEmotions } from '../icons';
+import { IconEmojiEmotions } from "../icons";
 
-import DropDown from './DropDown';
+import DropDown from "./DropDown";
 
 interface DropdownEmojiProps {
   disabled?: boolean;
@@ -31,7 +31,7 @@ const DropdownEmoji: React.FC<DropdownEmojiProps> = (props) => {
   const [emojis, setEmojis] = useState<Array<Emoji>>([]);
 
   useEffect(() => {
-    import('../utils/emoji-list').then((file) => setEmojis(file.default));
+    import("../utils/emoji-list").then((file) => setEmojis(file.default));
   }, []);
 
   const onSelectOption = useCallback(
@@ -54,12 +54,12 @@ const DropdownEmoji: React.FC<DropdownEmojiProps> = (props) => {
       disabled={disabled}
       buttonLabel={<IconEmojiEmotions />}
     >
-      <div className="flex flex-wrap max-w-[308px] gap-1 p-2.5 overflow-y-auto emojidropdown">
+      <div className="lexicaltheme__dropdown__emoji_box">
         {emojis.map((option) => (
           <span
-            key={option.aliases.join('')}
+            key={option.aliases.join("")}
             onClick={() => onSelectOption(option)}
-            className="cursor-pointer text hover:scale-150"
+            className="lexicaltheme__dropdown__emoji_item"
           >
             {option.emoji}
           </span>

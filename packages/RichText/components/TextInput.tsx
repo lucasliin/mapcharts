@@ -21,30 +21,18 @@ const TextInput: React.FC<TextInputProps> = (props) => {
   } = props;
 
   return (
-    <>
+    <div style={{ display: "flex", height: "32px" }}>
       {label ? (
-        <label
-          className={clsx(
-            "flex flex-1 text-[#666] whitespace-nowrap items-center",
-            'after:content-[":"] ms-0.5 me-2'
-          )}
-        >
-          {label}
-        </label>
+        <label className="lexicaltheme__textinputlabel">{label}</label>
       ) : null}
       <input
         type={type}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className={clsx(
-          "border border-solid border-[#d9d9d9] outline-none py-1 px-3 rounded-md placeholder:text-gray-300 w-full min-w-[250px]",
-          "hover:border-blue-500",
-          "focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(5,145,255,0.1)]",
-          className
-        )}
+        className={clsx("lexicaltheme__textinput", className)}
       />
-    </>
+    </div>
   );
 };
 

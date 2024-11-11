@@ -1,12 +1,10 @@
-import { DraggableBlockPlugin_EXPERIMENTAL } from '@lexical/react/LexicalDraggableBlockPlugin';
-import { useRef } from 'react';
+import { DraggableBlockPlugin_EXPERIMENTAL } from "@lexical/react/LexicalDraggableBlockPlugin";
+import { useRef } from "react";
 
-import { IconDraggableBlockMenu } from '../../icons';
+import { IconDraggableBlockMenu } from "../../icons";
 
 function isOnMenu(element: HTMLElement): boolean {
-  return !!element.closest(
-    'w-[16px] h-[16px] opacity-30 active:cursor-grabbing hover:bg-[#efefef]'
-  );
+  return !!element.closest("draggable-block-menu");
 }
 
 const DraggableBlockPlugin: React.FC<{
@@ -21,20 +19,14 @@ const DraggableBlockPlugin: React.FC<{
       anchorElem={anchorElem}
       targetLineRef={targetLineRef}
       menuComponent={
-        <div
-          ref={menuRef}
-          className="rounded px-px py-0.5 cursor-grab opacity-0 absolute left-0 top-0 will-change-transform"
-        >
-          <div className="w-[16px] h-[16px] opacity-30 active:cursor-grabbing hover:bg-[#efefef]">
+        <div ref={menuRef} className="draggable-block-menu">
+          <div className="icon">
             <IconDraggableBlockMenu />
           </div>
         </div>
       }
       targetLineComponent={
-        <div
-          ref={targetLineRef}
-          className="pointer-events-none bg-[deepskyblue] h-1 absolute left-0 top-0 opacity-0 will-change-transform"
-        />
+        <div ref={targetLineRef} className="draggable-block-target-line" />
       }
       isOnMenu={isOnMenu}
     />

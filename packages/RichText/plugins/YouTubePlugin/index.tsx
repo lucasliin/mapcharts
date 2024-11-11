@@ -50,22 +50,22 @@ export const InsetYouTubeDialog: React.FC<{
 
   return (
     <div>
-      <div className="w-[500px] p-5 gap-y-4">
+      <div className="lexicaltheme__dialogbody">
         <TextInput
           value={url}
           onChange={setUrl}
           placeholder="https://www.youtube.com/watch?v="
-          className={error ? "!border-red-500 outline-red-500" : ""}
+          className={error ? "lexicaltheme__fileinput__error" : ""}
         />
         {error ? (
-          <div className="mt-1.5 text-[12px] text-red-500">{error}</div>
+          <div className="lexicaltheme__fileinput__errortext">{error}</div>
         ) : null}
       </div>
       <DialogActions>
         <button
           onClick={() => onClick()}
           disabled={url.trim() === ""}
-          className="px-3 py-2 rounded-md cursor-pointer disabled:cursor-not-allowed disabled:text-gray-300 text-blue-500 hover:bg-blue-500/10"
+          className="lexicaltheme__dialogfotter__action"
         >
           确定
         </button>

@@ -1,7 +1,7 @@
-import { $isCodeHighlightNode } from '@lexical/code';
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { mergeRegister } from '@lexical/utils';
+import { $isCodeHighlightNode } from "@lexical/code";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister } from "@lexical/utils";
 import {
   $getSelection,
   $isParagraphNode,
@@ -11,14 +11,14 @@ import {
   FORMAT_TEXT_COMMAND,
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
-} from 'lexical';
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+} from "lexical";
+import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-import { getSelectedNode } from '../../utils/getSelectedNode';
-import { getDOMRangeRect } from '../../utils/getDOMRangeRect';
-import { setFloatingElemPosition } from '../../utils/setFloatingElemPosition';
-import { ToolbarButton } from '../ToolbarPlugin';
+import { getSelectedNode } from "../../utils/getSelectedNode";
+import { getDOMRangeRect } from "../../utils/getDOMRangeRect";
+import { setFloatingElemPosition } from "../../utils/setFloatingElemPosition";
+import { ToolbarButton } from "../ToolbarPlugin";
 import {
   IconCode,
   IconLink,
@@ -28,7 +28,7 @@ import {
   IconTypeSubscript,
   IconTypeSuperscript,
   IconTypeUnderline,
-} from '../../icons';
+} from "../../icons";
 
 interface TextFormatFloatingToolbarProps {
   editor: LexicalEditor;
@@ -65,7 +65,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
   const insertLink = useCallback(() => {
     if (!isLink) {
       setIsLinkEditMode(true);
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, 'https://');
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
     } else {
       setIsLinkEditMode(false);
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
@@ -77,34 +77,34 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
       popupCharStylesEditorRef?.current &&
       (e.buttons === 1 || e.buttons === 3)
     ) {
-      if (popupCharStylesEditorRef.current.style.pointerEvents !== 'none') {
+      if (popupCharStylesEditorRef.current.style.pointerEvents !== "none") {
         const x = e.clientX;
         const y = e.clientY;
         const elementUnderMouse = document.elementFromPoint(x, y);
 
         if (!popupCharStylesEditorRef.current.contains(elementUnderMouse)) {
           //- 拖拽
-          popupCharStylesEditorRef.current.style.pointerEvents = 'none';
+          popupCharStylesEditorRef.current.style.pointerEvents = "none";
         }
       }
     }
   }
-  function mouseUpListener(e: MouseEvent) {
+  function mouseUpListener() {
     if (popupCharStylesEditorRef?.current) {
-      if (popupCharStylesEditorRef.current.style.pointerEvents !== 'auto') {
-        popupCharStylesEditorRef.current.style.pointerEvents = 'auto';
+      if (popupCharStylesEditorRef.current.style.pointerEvents !== "auto") {
+        popupCharStylesEditorRef.current.style.pointerEvents = "auto";
       }
     }
   }
 
   useEffect(() => {
     if (popupCharStylesEditorRef?.current) {
-      document.addEventListener('mousemove', mouseMoveListener);
-      document.addEventListener('mouseup', mouseUpListener);
+      document.addEventListener("mousemove", mouseMoveListener);
+      document.addEventListener("mouseup", mouseUpListener);
 
       return () => {
-        document.removeEventListener('mousemove', mouseMoveListener);
-        document.removeEventListener('mouseup', mouseUpListener);
+        document.removeEventListener("mousemove", mouseMoveListener);
+        document.removeEventListener("mouseup", mouseUpListener);
       };
     }
   }, [popupCharStylesEditorRef]);
@@ -147,15 +147,15 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
       });
     };
 
-    window.addEventListener('resize', update);
+    window.addEventListener("resize", update);
     if (scrollerElem) {
-      scrollerElem.addEventListener('scroll', update);
+      scrollerElem.addEventListener("scroll", update);
     }
 
     return () => {
-      window.removeEventListener('resize', update);
+      window.removeEventListener("resize", update);
       if (scrollerElem) {
-        scrollerElem.removeEventListener('scroll', update);
+        scrollerElem.removeEventListener("scroll", update);
       }
     };
   }, [editor, $updateTextFormatFloatingToolbar, anchorElem]);
@@ -183,22 +183,19 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
   }, [editor, $updateTextFormatFloatingToolbar]);
 
   return (
-    <div
-      ref={popupCharStylesEditorRef}
-      className="flex bg-white p-1 align-middle absolute top-0 left-0 z-10 shadow-[0px_5px_10px_rgba(0,0,0,0.3)] min-h-[36px] rounded-b-lg"
-    >
+    <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
       {editor.isEditable() && (
         <>
           <ToolbarButton
             active={isBold}
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
           >
             <IconTypeBold />
           </ToolbarButton>
           <ToolbarButton
             active={isItalic}
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
             }}
           >
             <IconTypeItalic />
@@ -206,7 +203,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
           <ToolbarButton
             active={isUnderline}
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
             }}
           >
             <IconTypeUnderline />
@@ -214,7 +211,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
           <ToolbarButton
             active={isStrikethrough}
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
             }}
           >
             <IconTypeStrikethrough />
@@ -222,7 +219,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
           <ToolbarButton
             active={isSubscript}
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "subscript");
             }}
           >
             <IconTypeSubscript />
@@ -230,7 +227,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
           <ToolbarButton
             active={isSuperscript}
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript");
             }}
           >
             <IconTypeSuperscript />
@@ -238,7 +235,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
           <ToolbarButton
             active={isCode}
             onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
             }}
           >
             <IconCode />
@@ -289,13 +286,13 @@ function useFloatingTextFormatToolbar(
 
       const node = getSelectedNode(selection);
 
-      setIsBold(selection.hasFormat('bold'));
-      setIsItalic(selection.hasFormat('italic'));
-      setIsUnderline(selection.hasFormat('underline'));
-      setIsStrikethrough(selection.hasFormat('strikethrough'));
-      setIsSubscript(selection.hasFormat('subscript'));
-      setIsSuperscript(selection.hasFormat('superscript'));
-      setIsCode(selection.hasFormat('code'));
+      setIsBold(selection.hasFormat("bold"));
+      setIsItalic(selection.hasFormat("italic"));
+      setIsUnderline(selection.hasFormat("underline"));
+      setIsStrikethrough(selection.hasFormat("strikethrough"));
+      setIsSubscript(selection.hasFormat("subscript"));
+      setIsSuperscript(selection.hasFormat("superscript"));
+      setIsCode(selection.hasFormat("code"));
 
       const parent = node.getParent();
       if ($isLinkNode(parent) || $isLinkNode(node)) setIsLink(true);
@@ -303,15 +300,15 @@ function useFloatingTextFormatToolbar(
 
       if (
         !$isCodeHighlightNode(selection.anchor.getNode()) &&
-        selection.getTextContent() !== ''
+        selection.getTextContent() !== ""
       ) {
         setIsText($isTextNode(node) || $isParagraphNode(node));
       } else {
         setIsText(false);
       }
 
-      const rawTextContent = selection.getTextContent().replace(/\n/g, '');
-      if (!selection.isCollapsed() && rawTextContent === '') {
+      const rawTextContent = selection.getTextContent().replace(/\n/g, "");
+      if (!selection.isCollapsed() && rawTextContent === "") {
         setIsText(false);
         return;
       }
@@ -319,9 +316,9 @@ function useFloatingTextFormatToolbar(
   }, [editor]);
 
   useEffect(() => {
-    document.addEventListener('selectionchange', updatePopup);
+    document.addEventListener("selectionchange", updatePopup);
     return () => {
-      document.removeEventListener('selectionchange', updatePopup);
+      document.removeEventListener("selectionchange", updatePopup);
     };
   }, [updatePopup]);
 

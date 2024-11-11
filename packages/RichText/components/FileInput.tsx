@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { first } from "lodash";
 import React, { useState } from "react";
 
@@ -15,18 +14,11 @@ const FileInput: React.FC<FileInputProps> = (props) => {
   const [fileName, setFileName] = useState<string>();
 
   return (
-    <>
-      <label
-        className={clsx(
-          "flex flex-1 text-[#666] whitespace-nowrap items-center",
-          'after:content-[":"] ms-0.5 me-2'
-        )}
-      >
-        {label}
-      </label>
+    <div style={{ display: "flex", height: "32px" }}>
+      <label className="lexicaltheme__textinputlabel">{label}</label>
       <div
+        className="lexicaltheme__fileinput"
         onClick={() => inputRef.current?.click()}
-        className="rounded-md border-solid border border-[#d9d9d9] text-gray-300 py-1 px-3 hover:border-blue-500 hover:text-blue-500 cursor-pointer w-full whitespace-nowrap"
       >
         {fileName || "选择文件"}
       </div>
@@ -35,13 +27,13 @@ const FileInput: React.FC<FileInputProps> = (props) => {
         ref={inputRef}
         accept={accept}
         multiple={false}
+        style={{ display: "none" }}
         onChange={(e) => {
           onChange(e.target.files);
           setFileName(first(e.target.files)?.name);
         }}
-        className="hidden border border-solid border-[#999] py-2 px-2.5 rounded min-w-0"
       />
-    </>
+    </div>
   );
 };
 

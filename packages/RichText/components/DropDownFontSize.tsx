@@ -1,8 +1,8 @@
-import { $patchStyleText } from '@lexical/selection';
-import { $getSelection, LexicalEditor } from 'lexical';
-import { useCallback } from 'react';
+import { $patchStyleText } from "@lexical/selection";
+import { $getSelection, LexicalEditor } from "lexical";
+import { useCallback } from "react";
 
-import DropDown, { DropDownItem } from './DropDown';
+import DropDown, { DropDownItem } from "./DropDown";
 
 interface DropDownFontSizeProps {
   selectionFontSize: string;
@@ -13,27 +13,27 @@ interface DropDownFontSizeProps {
 const DropDownFontSize: React.FC<DropDownFontSizeProps> = (props) => {
   const { editor, selectionFontSize, disabled = false } = props;
   const fontSizeOptions = [
-    '10px',
-    '12px',
-    '14px',
-    '16px',
-    '18px',
-    '20px',
-    '22px',
-    '24px',
-    '26px',
-    '28px',
-    '30px',
-    '32px',
-    '36px',
-    '40px',
-    '48px',
-    '56px',
-    '64px',
-    '72px',
-    '96px',
-    '120px',
-    '144px',
+    "10px",
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "22px",
+    "24px",
+    "26px",
+    "28px",
+    "30px",
+    "32px",
+    "36px",
+    "40px",
+    "48px",
+    "56px",
+    "64px",
+    "72px",
+    "96px",
+    "120px",
+    "144px",
   ];
 
   const updateFontSizeInSelection = useCallback(
@@ -43,7 +43,7 @@ const DropDownFontSize: React.FC<DropDownFontSizeProps> = (props) => {
           const selection = $getSelection();
           if (selection !== null) {
             $patchStyleText(selection, {
-              'font-size': newFontSize,
+              "font-size": newFontSize,
             });
           }
         }
@@ -60,7 +60,7 @@ const DropDownFontSize: React.FC<DropDownFontSizeProps> = (props) => {
           active={selectionFontSize === fontSize}
           onClick={() => updateFontSizeInSelection(fontSize)}
         >
-          <span className="text">{fontSize}</span>
+          <span>{fontSize}</span>
         </DropDownItem>
       ))}
     </DropDown>

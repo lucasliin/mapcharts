@@ -1,19 +1,18 @@
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
-import { $isListNode, ListNode } from '@lexical/list';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $isHeadingNode, $isQuoteNode } from '@lexical/rich-text';
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import { $isListNode, ListNode } from "@lexical/list";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
 import {
   $getSelectionStyleValueForProperty,
-  $isParentElementRTL,
   $patchStyleText,
-} from '@lexical/selection';
-import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode';
+} from "@lexical/selection";
+import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import {
   $findMatchingParent,
   $getNearestBlockElementAncestorOrThrow,
   $getNearestNodeOfType,
   mergeRegister,
-} from '@lexical/utils';
+} from "@lexical/utils";
 import {
   $createParagraphNode,
   $getSelection,
@@ -26,22 +25,21 @@ import {
   COMMAND_PRIORITY_CRITICAL,
   ElementFormatType,
   FORMAT_TEXT_COMMAND,
-  NodeKey,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   TextFormatType,
   UNDO_COMMAND,
-} from 'lexical';
-import clsx from 'clsx';
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
-import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
+} from "lexical";
+import clsx from "clsx";
+import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
+import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 
-import DropDownFontSize from '../../components/DropDownFontSize';
-import { getSelectedNode } from '../../utils/getSelectedNode';
-import DropdownColorPicker from '../../components/DropDownColorPicker';
-import BlockFormatDropDown from '../../components/DropDownBlock';
-import DropDownLineHeight from '../../components/DropDownLineHeight';
-import DropDownAlignment from '../../components/DropDownAlignment';
+import DropDownFontSize from "../../components/DropDownFontSize";
+import { getSelectedNode } from "../../utils/getSelectedNode";
+import DropdownColorPicker from "../../components/DropDownColorPicker";
+import BlockFormatDropDown from "../../components/DropDownBlock";
+import DropDownLineHeight from "../../components/DropDownLineHeight";
+import DropDownAlignment from "../../components/DropDownAlignment";
 import {
   IconBackgound,
   IconCode,
@@ -59,33 +57,31 @@ import {
   IconTypeUnderline,
   IconUndo,
   IconYoutube,
-} from '../../icons';
-import { InsertImageDialog } from '../ImagesPlugin';
-import useModal from '../../utils/useModal';
-import { sanitizeUrl } from '../../utils/url';
-import DropdownEmoji from '../../components/DropDownEmoji';
-import DropDownLetterSpacing from '../../components/DropDownLetterSpacing';
-import { InsetYouTubeDialog } from '../YouTubePlugin';
+} from "../../icons";
+import { InsertImageDialog } from "../ImagesPlugin";
+import useModal from "../../utils/useModal";
+import { sanitizeUrl } from "../../utils/url";
+import DropdownEmoji from "../../components/DropDownEmoji";
+import DropDownLetterSpacing from "../../components/DropDownLetterSpacing";
+import { InsetYouTubeDialog } from "../YouTubePlugin";
 
 const blockTypeToBlockName = {
-  bullet: 'Bulleted List',
-  check: 'Check List',
-  code: 'Code Block',
-  h1: 'Heading 1',
-  h2: 'Heading 2',
-  h3: 'Heading 3',
-  h4: 'Heading 4',
-  h5: 'Heading 5',
-  h6: 'Heading 6',
-  number: 'Numbered List',
-  paragraph: 'Normal',
-  quote: 'Quote',
+  bullet: "Bulleted List",
+  check: "Check List",
+  code: "Code Block",
+  h1: "Heading 1",
+  h2: "Heading 2",
+  h3: "Heading 3",
+  h4: "Heading 4",
+  h5: "Heading 5",
+  h6: "Heading 6",
+  number: "Numbered List",
+  paragraph: "Normal",
+  quote: "Quote",
 };
 
 const Divider: React.FC = () => {
-  return (
-    <div className="h-8 mx-2 w-px float-left block shadow-[inset_-1px_0_#0000001a]" />
-  );
+  return <div className="lexicaltheme__toolbar__divider" />;
 };
 
 interface ToolbarButtonProps
@@ -99,15 +95,13 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = (props) => {
     <button
       type="button"
       className={clsx(
-        'min-h-[36px] min-w-[36px] flex items-center justify-center border-none cursor-pointer text-gray-700 rounded hover:bg-[#0000000d]',
-        'disabled:text-gray-300 disabled:cursor-default disabled:hover:bg-transparent',
-        active ? 'bg-[#0000000d]' : 'bg-transparent',
-        className,
-        '[&svg]:w-4 [&svg]:h-4'
+        "toolbarbutton",
+        active ? "toolbarbutton-active" : "",
+        className
       )}
       {...rest}
     >
-      {props.children}
+      {children}
     </button>
   );
 };
@@ -120,20 +114,17 @@ const ToolbarPlugin: React.FC<{
   const toolbarRef = useRef(null);
 
   const [blockType, setBlockType] =
-    useState<keyof typeof blockTypeToBlockName>('paragraph');
-  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
-    null
-  );
+    useState<keyof typeof blockTypeToBlockName>("paragraph");
 
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
-  const [fontSize, setFontSize] = useState<string>('16px');
+  const [fontSize, setFontSize] = useState<string>("16px");
   const [lineHeight, setLineHeight] = useState<string>();
   const [letterSpacing, setLetterSpacing] = useState<string>();
 
-  const [fontColor, setFontColor] = useState<string>('#000');
-  const [bgColor, setBgColor] = useState<string>('#fff');
+  const [fontColor, setFontColor] = useState<string>("#000");
+  const [bgColor, setBgColor] = useState<string>("#fff");
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
@@ -144,9 +135,8 @@ const ToolbarPlugin: React.FC<{
   const [isSubscript, setIsSubscript] = useState(false);
   const [isSuperscript, setIsSuperscript] = useState(false);
 
-  const [elementFormat, setElementFormat] = useState<ElementFormatType>('left');
+  const [elementFormat, setElementFormat] = useState<ElementFormatType>("left");
 
-  const [isRTL, setIsRTL] = useState(false);
   const [modal, showModal] = useModal();
 
   //- update toolbar state
@@ -155,7 +145,7 @@ const ToolbarPlugin: React.FC<{
     if ($isRangeSelection(selection)) {
       const anchorNode = selection.anchor.getNode();
       let element =
-        anchorNode.getKey() === 'root'
+        anchorNode.getKey() === "root"
           ? anchorNode
           : $findMatchingParent(anchorNode, (e) => {
               const parent = e.getParent();
@@ -169,8 +159,6 @@ const ToolbarPlugin: React.FC<{
       const elementKey = element.getKey();
       const elementDOM = activeEditor.getElementByKey(elementKey);
 
-      setIsRTL($isParentElementRTL(selection));
-
       // Update links
       const node = getSelectedNode(selection);
       const parent = node.getParent();
@@ -181,7 +169,6 @@ const ToolbarPlugin: React.FC<{
       }
 
       if (elementDOM !== null) {
-        setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType<ListNode>(
             anchorNode,
@@ -202,13 +189,13 @@ const ToolbarPlugin: React.FC<{
       }
       // Handle buttons
       setFontColor(
-        $getSelectionStyleValueForProperty(selection, 'color', '#000')
+        $getSelectionStyleValueForProperty(selection, "color", "#000")
       );
       setBgColor(
         $getSelectionStyleValueForProperty(
           selection,
-          'background-color',
-          '#fff'
+          "background-color",
+          "#fff"
         )
       );
       let matchingParent;
@@ -226,27 +213,27 @@ const ToolbarPlugin: React.FC<{
           ? matchingParent.getFormatType()
           : $isElementNode(node)
           ? node.getFormatType()
-          : parent?.getFormatType() || 'left'
+          : parent?.getFormatType() || "left"
       );
     }
     if ($isRangeSelection(selection)) {
       // Update text format
-      setIsBold(selection.hasFormat('bold'));
-      setIsItalic(selection.hasFormat('italic'));
-      setIsUnderline(selection.hasFormat('underline'));
-      setIsStrikethrough(selection.hasFormat('strikethrough'));
-      setIsSubscript(selection.hasFormat('subscript'));
-      setIsSuperscript(selection.hasFormat('superscript'));
-      setIsCode(selection.hasFormat('code'));
+      setIsBold(selection.hasFormat("bold"));
+      setIsItalic(selection.hasFormat("italic"));
+      setIsUnderline(selection.hasFormat("underline"));
+      setIsStrikethrough(selection.hasFormat("strikethrough"));
+      setIsSubscript(selection.hasFormat("subscript"));
+      setIsSuperscript(selection.hasFormat("superscript"));
+      setIsCode(selection.hasFormat("code"));
 
       setFontSize(
-        $getSelectionStyleValueForProperty(selection, 'font-size', '16px')
+        $getSelectionStyleValueForProperty(selection, "font-size", "16px")
       );
       setLineHeight(
-        $getSelectionStyleValueForProperty(selection, 'line-height')
+        $getSelectionStyleValueForProperty(selection, "line-height")
       );
       setLetterSpacing(
-        $getSelectionStyleValueForProperty(selection, 'letter-spacing', '0px')
+        $getSelectionStyleValueForProperty(selection, "letter-spacing", "0px")
       );
     }
   }, [activeEditor]);
@@ -303,7 +290,7 @@ const ToolbarPlugin: React.FC<{
           const selection = $getSelection();
           if (selection !== null) $patchStyleText(selection, styles);
         },
-        skipHistoryStack ? { tag: 'historic' } : {}
+        skipHistoryStack ? { tag: "historic" } : {}
       );
     },
     [activeEditor]
@@ -338,19 +325,19 @@ const ToolbarPlugin: React.FC<{
               textNode = extractedTextNode;
             }
 
-            if (textNode.__style !== '') {
-              textNode.setStyle('');
+            if (textNode.__style !== "") {
+              textNode.setStyle("");
             }
             if (textNode.__format !== 0) {
               textNode.setFormat(0);
-              $getNearestBlockElementAncestorOrThrow(textNode).setFormat('');
+              $getNearestBlockElementAncestorOrThrow(textNode).setFormat("");
             }
             // eslint-disable-next-line no-param-reassign
             node = textNode;
           } else if ($isHeadingNode(node) || $isQuoteNode(node)) {
             node.replace($createParagraphNode(), true);
           } else if ($isDecoratorBlockNode(node)) {
-            node.setFormat('');
+            node.setFormat("");
           }
         });
       }
@@ -368,7 +355,7 @@ const ToolbarPlugin: React.FC<{
   //- background color handler
   const onBgColorSelect = useCallback(
     (value: string, skipHistoryStack: boolean) => {
-      applyStyleText({ 'background-color': value }, skipHistoryStack);
+      applyStyleText({ "background-color": value }, skipHistoryStack);
     },
     [applyStyleText]
   );
@@ -378,7 +365,7 @@ const ToolbarPlugin: React.FC<{
       setIsLinkEditMode(true);
       activeEditor.dispatchCommand(
         TOGGLE_LINK_COMMAND,
-        sanitizeUrl('https://')
+        sanitizeUrl("https://")
       );
     } else {
       setIsLinkEditMode(false);
@@ -387,10 +374,7 @@ const ToolbarPlugin: React.FC<{
   }, [activeEditor, isLink, setIsLinkEditMode]);
 
   return (
-    <div
-      ref={toolbarRef}
-      className="flex items-center flex-wrap rounded-t-lg p-1 gap-0.5 border-b border-t-0 border-x-0 border-gray-300 border-solid bg-white"
-    >
+    <div ref={toolbarRef} className="lexicaltheme__toolbar">
       {/* Undo/Redo */}
       <ToolbarButton
         disabled={!canUndo}
@@ -429,25 +413,25 @@ const ToolbarPlugin: React.FC<{
         onChange={onBgColorSelect}
         icon={<IconBackgound />}
       />
-      <ToolbarButton active={isBold} onClick={() => formatText('bold')}>
+      <ToolbarButton active={isBold} onClick={() => formatText("bold")}>
         <IconTypeBold />
       </ToolbarButton>
-      <ToolbarButton active={isItalic} onClick={() => formatText('italic')}>
+      <ToolbarButton active={isItalic} onClick={() => formatText("italic")}>
         <IconTypeItalic />
       </ToolbarButton>
       <ToolbarButton
         active={isUnderline}
-        onClick={() => formatText('underline')}
+        onClick={() => formatText("underline")}
       >
         <IconTypeUnderline />
       </ToolbarButton>
       <ToolbarButton
         active={isStrikethrough}
-        onClick={() => formatText('strikethrough')}
+        onClick={() => formatText("strikethrough")}
       >
         <IconTypeStrikethrough />
       </ToolbarButton>
-      <ToolbarButton active={isCode} onClick={() => formatText('code')}>
+      <ToolbarButton active={isCode} onClick={() => formatText("code")}>
         <IconCode />
       </ToolbarButton>
       <Divider />
@@ -455,13 +439,13 @@ const ToolbarPlugin: React.FC<{
       {/* script/subscript/superscript */}
       <ToolbarButton
         active={isSubscript}
-        onClick={() => formatText('subscript')}
+        onClick={() => formatText("subscript")}
       >
         <IconTypeSubscript />
       </ToolbarButton>
       <ToolbarButton
         active={isSuperscript}
-        onClick={() => formatText('superscript')}
+        onClick={() => formatText("superscript")}
       >
         <IconTypeSuperscript />
       </ToolbarButton>
@@ -486,7 +470,7 @@ const ToolbarPlugin: React.FC<{
 
       <ToolbarButton
         onClick={() => {
-          showModal('插入图片', (onClose) => (
+          showModal("插入图片", (onClose) => (
             <InsertImageDialog activeEditor={activeEditor} onClose={onClose} />
           ));
         }}

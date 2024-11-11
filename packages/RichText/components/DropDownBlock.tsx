@@ -2,16 +2,16 @@ import {
   INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
-} from '@lexical/list';
-import { $createQuoteNode } from '@lexical/rich-text';
-import { $setBlocksType } from '@lexical/selection';
+} from "@lexical/list";
+import { $createQuoteNode } from "@lexical/rich-text";
+import { $setBlocksType } from "@lexical/selection";
 import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
   LexicalEditor,
-} from 'lexical';
-import { $createCodeNode } from '@lexical/code';
+} from "lexical";
+import { $createCodeNode } from "@lexical/code";
 
 import {
   IconChatSquareQuote,
@@ -20,23 +20,23 @@ import {
   IconListOl,
   IconListUl,
   IconTextParagraph,
-} from '../icons';
+} from "../icons";
 
-import DropDown, { DropDownItem } from './DropDown';
+import DropDown, { DropDownItem } from "./DropDown";
 
 const blockTypeToBlockName = {
-  bullet: 'Bulleted List',
-  check: 'Check List',
-  code: 'Code Block',
-  h1: 'Heading 1',
-  h2: 'Heading 2',
-  h3: 'Heading 3',
-  h4: 'Heading 4',
-  h5: 'Heading 5',
-  h6: 'Heading 6',
-  number: 'Numbered List',
-  paragraph: 'Normal',
-  quote: 'Quote',
+  bullet: "Bulleted List",
+  check: "Check List",
+  code: "Code Block",
+  h1: "Heading 1",
+  h2: "Heading 2",
+  h3: "Heading 3",
+  h4: "Heading 4",
+  h5: "Heading 5",
+  h6: "Heading 6",
+  number: "Numbered List",
+  paragraph: "Normal",
+  quote: "Quote",
 };
 
 interface BlockFormatDropDownProps {
@@ -59,7 +59,7 @@ const BlockFormatDropDown: React.FC<BlockFormatDropDownProps> = ({
   };
 
   const formatBulletList = () => {
-    if (blockType !== 'bullet') {
+    if (blockType !== "bullet") {
       editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
     } else {
       formatParagraph();
@@ -67,7 +67,7 @@ const BlockFormatDropDown: React.FC<BlockFormatDropDownProps> = ({
   };
 
   const formatCheckList = () => {
-    if (blockType !== 'check') {
+    if (blockType !== "check") {
       editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
     } else {
       formatParagraph();
@@ -75,7 +75,7 @@ const BlockFormatDropDown: React.FC<BlockFormatDropDownProps> = ({
   };
 
   const formatNumberedList = () => {
-    if (blockType !== 'number') {
+    if (blockType !== "number") {
       editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
     } else {
       formatParagraph();
@@ -83,7 +83,7 @@ const BlockFormatDropDown: React.FC<BlockFormatDropDownProps> = ({
   };
 
   const formatQuote = () => {
-    if (blockType !== 'quote') {
+    if (blockType !== "quote") {
       editor.update(() => {
         const selection = $getSelection();
         $setBlocksType(selection, () => $createQuoteNode());
@@ -92,7 +92,7 @@ const BlockFormatDropDown: React.FC<BlockFormatDropDownProps> = ({
   };
 
   const formatCode = () => {
-    if (blockType !== 'code') {
+    if (blockType !== "code") {
       editor.update(() => {
         let selection = $getSelection();
 
@@ -116,34 +116,34 @@ const BlockFormatDropDown: React.FC<BlockFormatDropDownProps> = ({
   return (
     <DropDown buttonLabel={blockTypeToBlockName[blockType]}>
       <DropDownItem
-        active={blockType === 'paragraph'}
+        active={blockType === "paragraph"}
         onClick={formatParagraph}
       >
         <IconTextParagraph />
-        <span className="text">Normal</span>
+        <span>Normal</span>
       </DropDownItem>
-      <DropDownItem active={blockType === 'bullet'} onClick={formatBulletList}>
+      <DropDownItem active={blockType === "bullet"} onClick={formatBulletList}>
         <IconListUl />
-        <span className="text">Bullet List</span>
+        <span>Bullet List</span>
       </DropDownItem>
       <DropDownItem
-        active={blockType === 'number'}
+        active={blockType === "number"}
         onClick={formatNumberedList}
       >
         <IconListOl />
-        <span className="text">Numbered List</span>
+        <span>Numbered List</span>
       </DropDownItem>
-      <DropDownItem active={blockType === 'check'} onClick={formatCheckList}>
+      <DropDownItem active={blockType === "check"} onClick={formatCheckList}>
         <IconChecklist />
-        <span className="text">Check List</span>
+        <span>Check List</span>
       </DropDownItem>
-      <DropDownItem active={blockType === 'quote'} onClick={formatQuote}>
+      <DropDownItem active={blockType === "quote"} onClick={formatQuote}>
         <IconChatSquareQuote />
-        <span className="text">Quote</span>
+        <span>Quote</span>
       </DropDownItem>
-      <DropDownItem active={blockType === 'code'} onClick={formatCode}>
+      <DropDownItem active={blockType === "code"} onClick={formatCode}>
         <IconCode />
-        <span className="text">Code Block</span>
+        <span>Code Block</span>
       </DropDownItem>
     </DropDown>
   );

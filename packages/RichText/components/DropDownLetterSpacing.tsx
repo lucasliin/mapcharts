@@ -1,9 +1,9 @@
-import { $patchStyleText } from '@lexical/selection';
-import { $getSelection, LexicalEditor } from 'lexical';
-import { useCallback } from 'react';
-import { range } from 'lodash';
+import { $patchStyleText } from "@lexical/selection";
+import { $getSelection, LexicalEditor } from "lexical";
+import { useCallback } from "react";
+import { range } from "lodash";
 
-import DropDown, { DropDownItem } from './DropDown';
+import DropDown, { DropDownItem } from "./DropDown";
 
 interface DropDownLetterSpacingProps {
   selectionLetterSpacing?: string;
@@ -13,7 +13,7 @@ interface DropDownLetterSpacingProps {
 
 const DropDownLetterSpacing: React.FC<DropDownLetterSpacingProps> = (props) => {
   const { editor, selectionLetterSpacing, disabled = false } = props;
-  const letterSpacingOptions = range(0, 6, 1).map((i) => i + 'px');
+  const letterSpacingOptions = range(0, 6, 1).map((i) => i + "px");
 
   const updateLetterSpacingInSelection = useCallback(
     (newValue: string) => {
@@ -22,7 +22,7 @@ const DropDownLetterSpacing: React.FC<DropDownLetterSpacingProps> = (props) => {
           const selection = $getSelection();
           if (selection !== null) {
             $patchStyleText(selection, {
-              'letter-spacing': newValue,
+              "letter-spacing": newValue,
             });
           }
         }
@@ -39,7 +39,7 @@ const DropDownLetterSpacing: React.FC<DropDownLetterSpacingProps> = (props) => {
           active={selectionLetterSpacing === letterSpacing}
           onClick={() => updateLetterSpacingInSelection(letterSpacing)}
         >
-          <span className="text">{letterSpacing}</span>
+          <span>{letterSpacing}</span>
         </DropDownItem>
       ))}
     </DropDown>

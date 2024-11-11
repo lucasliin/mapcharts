@@ -36,6 +36,7 @@ export type InsertImagePayload = Readonly<ImagePayload>;
 const getDOMSelection = (targetWindow: Window | null): Selection | null =>
   CAN_USE_DOM ? (targetWindow || window).getSelection() : null;
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
   createCommand("INSERT_IMAGE_COMMAND");
 
@@ -53,7 +54,7 @@ export const InsertImageUriDialogBody: React.FC<InsertImageBodyProps> = ({
 
   return (
     <>
-      <div className="w-[500px] p-5 grid grid-cols-[min-content_1fr] gap-y-4">
+      <div className="insertimage-dialog">
         <TextInput
           value={src}
           label="图片地址"
@@ -70,8 +71,8 @@ export const InsertImageUriDialogBody: React.FC<InsertImageBodyProps> = ({
       <DialogActions>
         <button
           disabled={isDisabled}
+          className="insertimage-dialog-button"
           onClick={() => onClick({ altText, src })}
-          className="px-3 py-2 rounded-md cursor-pointer disabled:cursor-not-allowed disabled:text-gray-300 text-blue-500 hover:bg-blue-500/10"
         >
           确定
         </button>
@@ -103,7 +104,7 @@ export const InsertImageUploadedDialogBody: React.FC<InsertImageBodyProps> = ({
 
   return (
     <>
-      <div className="w-[500px] p-5 grid grid-cols-[min-content_1fr] gap-y-4">
+      <div className="insertimage-dialog">
         <FileInput label="图片上传" onChange={loadImage} accept="image/*" />
         <TextInput
           label="图片描述"
@@ -116,7 +117,7 @@ export const InsertImageUploadedDialogBody: React.FC<InsertImageBodyProps> = ({
         <button
           disabled={isDisabled}
           onClick={() => onClick({ altText, src })}
-          className="px-3 py-2 rounded-md cursor-pointer disabled:cursor-not-allowed disabled:text-gray-300 text-blue-500 hover:bg-blue-500/10"
+          className="insertimage-dialog-button"
         >
           确定
         </button>
@@ -151,7 +152,7 @@ export const InsertImageDialog: React.FC<{
   return (
     <div>
       {!mode && (
-        <div className="p-5">
+        <div style={{ padding: "20px" }}>
           <DialogButtonsList>
             <Button onClick={() => setMode("url")}>通过 URL 上传</Button>
             <Button onClick={() => setMode("file")}>选择文件</Button>

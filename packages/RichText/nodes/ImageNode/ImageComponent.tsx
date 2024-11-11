@@ -29,6 +29,7 @@ import { $isImageNode } from ".";
 
 const imageCache = new Set();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> =
   createCommand("RIGHT_CLICK_IMAGE_COMMAND");
 
@@ -298,8 +299,8 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
             editor={editor}
             imageRef={imageRef}
             maxWidth={maxWidth}
-            onResizeStart={onResizeStart}
             onResizeEnd={onResizeEnd}
+            onResizeStart={onResizeStart}
           />
         )}
       </>

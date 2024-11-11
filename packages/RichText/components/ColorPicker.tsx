@@ -1,6 +1,6 @@
-import clsx from 'clsx';
-import { calculateZoomLevel } from '@lexical/utils';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import clsx from "clsx";
+import { calculateZoomLevel } from "@lexical/utils";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 let skipAddingToHistoryStack = false;
 
@@ -10,32 +10,32 @@ interface ColorPickerProps {
 }
 
 const basicColors = [
-  '#d0021b',
-  '#f5a623',
-  '#f8e71c',
-  '#8b572a',
-  '#7ed321',
-  '#417505',
-  '#bd10e0',
-  '#9013fe',
-  '#4a90e2',
-  '#50e3c2',
-  '#b8e986',
-  '#000000',
-  '#4a4a4a',
-  '#9b9b9b',
-  '#ffffff',
+  "#d0021b",
+  "#f5a623",
+  "#f8e71c",
+  "#8b572a",
+  "#7ed321",
+  "#417505",
+  "#bd10e0",
+  "#9013fe",
+  "#4a90e2",
+  "#50e3c2",
+  "#b8e986",
+  "#000000",
+  "#4a4a4a",
+  "#9b9b9b",
+  "#ffffff",
 ];
 
 const WIDTH = 214;
 const HEIGHT = 150;
 
-export function toHex(value: string): string {
-  if (!value.startsWith('#')) {
-    const ctx = document.createElement('canvas').getContext('2d');
+function toHex(value: string): string {
+  if (!value.startsWith("#")) {
+    const ctx = document.createElement("canvas").getContext("2d");
 
     if (!ctx) {
-      throw new Error('2d context not supported or canvas already initialized');
+      throw new Error("2d context not supported or canvas already initialized");
     }
 
     ctx.fillStyle = value;
@@ -43,16 +43,16 @@ export function toHex(value: string): string {
     return ctx.fillStyle;
   } else if (value.length === 4 || value.length === 5) {
     const res = value
-      .split('')
-      .map((v, i) => (i ? v + v : '#'))
-      .join('');
+      .split("")
+      .map((v, i) => (i ? v + v : "#"))
+      .join("");
 
     return res;
   } else if (value.length === 7 || value.length === 9) {
     return value;
   }
 
-  return '#000000';
+  return "#000000";
 }
 
 function hex2rgb(hex: string): RGB {
@@ -60,7 +60,7 @@ function hex2rgb(hex: string): RGB {
     hex
       .replace(
         /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-        (m, r, g, b) => '#' + r + r + g + g + b + b
+        (m, r, g, b) => "#" + r + r + g + g + b + b
       )
       .substring(1)
       .match(/.{2}/g) || []
@@ -113,31 +113,31 @@ function hsv2rgb(hsv: HSV): RGB {
 }
 
 function rgb2hex({ b, g, r }: RGB): string {
-  return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
 
 function transformColor<M extends keyof Color, C extends Color[M]>(
   format: M,
   color: C
 ): Color {
-  let hex: Color['hex'] = toHex('#121212');
-  let rgb: Color['rgb'] = hex2rgb(hex);
-  let hsv: Color['hsv'] = rgb2hsv(rgb);
+  let hex: Color["hex"] = toHex("#121212");
+  let rgb: Color["rgb"] = hex2rgb(hex);
+  let hsv: Color["hsv"] = rgb2hsv(rgb);
 
-  if (format === 'hex') {
-    const value = color as Color['hex'];
+  if (format === "hex") {
+    const value = color as Color["hex"];
 
     hex = toHex(value);
     rgb = hex2rgb(hex);
     hsv = rgb2hsv(rgb);
-  } else if (format === 'rgb') {
-    const value = color as Color['rgb'];
+  } else if (format === "rgb") {
+    const value = color as Color["rgb"];
 
     rgb = value;
     hex = rgb2hex(rgb);
     hsv = rgb2hsv(rgb);
-  } else if (format === 'hsv') {
-    const value = color as Color['hsv'];
+  } else if (format === "hsv") {
+    const value = color as Color["hsv"];
 
     hsv = value;
     rgb = hsv2rgb(hsv);
@@ -214,15 +214,15 @@ const MoveWrapper: React.FC<MoveWrapperProps> = (props) => {
         skipAddingToHistoryStack = false;
       }
 
-      document.removeEventListener('mousemove', onMouseMove, false);
-      document.removeEventListener('mouseup', onMouseUp, false);
+      document.removeEventListener("mousemove", onMouseMove, false);
+      document.removeEventListener("mouseup", onMouseUp, false);
 
       move(_e);
       draggedRef.current = false;
     };
 
-    document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener('mouseup', onMouseUp, false);
+    document.addEventListener("mousemove", onMouseMove, false);
+    document.addEventListener("mouseup", onMouseUp, false);
   };
 
   return (
@@ -239,7 +239,7 @@ const MoveWrapper: React.FC<MoveWrapperProps> = (props) => {
 
 const ColorPicker: React.FC<Readonly<ColorPickerProps>> = (props) => {
   const { color, onChange } = props;
-  const [selfColor, setSelfColor] = useState(transformColor('hex', color));
+  const [selfColor, setSelfColor] = useState(transformColor("hex", color));
   const [inputColor, setInputColor] = useState(color);
   const innerDivRef = useRef(null);
 
@@ -261,7 +261,7 @@ const ColorPicker: React.FC<Readonly<ColorPickerProps>> = (props) => {
   const onSetHex = (hex: string) => {
     setInputColor(hex);
     if (/^#[0-9A-Fa-f]{6}$/i.test(hex)) {
-      const newColor = transformColor('hex', hex);
+      const newColor = transformColor("hex", hex);
       setSelfColor(newColor);
     }
   };
@@ -272,14 +272,14 @@ const ColorPicker: React.FC<Readonly<ColorPickerProps>> = (props) => {
       s: (x / WIDTH) * 100,
       v: 100 - (y / HEIGHT) * 100,
     };
-    const newColor = transformColor('hsv', newHsv);
+    const newColor = transformColor("hsv", newHsv);
     setSelfColor(newColor);
     setInputColor(newColor.hex);
   };
 
   const onMoveHue = ({ x }: Position) => {
     const newHsv = { ...selfColor.hsv, h: (x / WIDTH) * 360 };
-    const newColor = transformColor('hsv', newHsv);
+    const newColor = transformColor("hsv", newHsv);
 
     setSelfColor(newColor);
     setInputColor(newColor.hex);
@@ -297,68 +297,78 @@ const ColorPicker: React.FC<Readonly<ColorPickerProps>> = (props) => {
     if (color === undefined) {
       return;
     }
-    const newColor = transformColor('hex', color);
+    const newColor = transformColor("hex", color);
     setSelfColor(newColor);
     setInputColor(newColor.hex);
   }, [color]);
 
   return (
-    <div className="box-content p-4" style={{ width: WIDTH }} ref={innerDivRef}>
-      <div className="flex items-center w-full gap-2 mb-2">
-        <label htmlFor="color-picker-input text-[14px]">HEX:</label>
+    <div
+      ref={innerDivRef}
+      style={{ width: WIDTH }}
+      className="lexicaltheme__colorpicker"
+    >
+      <div className="lexicaltheme__colorpicker__wrapper">
+        <label style={{ fontSize: "14px" }} htmlFor="color-picker-input">
+          HEX:
+        </label>
         <input
           value={inputColor}
           id="color-picker-input"
           onChange={(ev) => onSetHex(ev.target.value)}
-          className="w-full rounded border border-solid h-7 outline-none focus:outline-blue-400 border-[#ccc] text-[14px] px-2"
+          className="lexicaltheme__colorpicker__input"
         />
       </div>
-      <div className="flex flex-wrap gap-2.5 m-0 p-0">
+      <div className="lexicaltheme__colorpicker__box">
         {basicColors.map((basicColor) => (
           <button
             type="button"
             key={basicColor}
             style={{ backgroundColor: basicColor }}
             className={clsx(
-              'border border-solid border-[#ccc] h-4 w-4 rounded cursor-pointer',
-              basicColor === selfColor.hex ? 'outline outline-blue-500' : ''
+              "lexicaltheme__colorpicker__cell",
+              basicColor === selfColor.hex
+                ? "lexicaltheme__colorpicker__cell_active"
+                : ""
             )}
             onClick={() => {
               setInputColor(basicColor);
-              setSelfColor(transformColor('hex', basicColor));
+              setSelfColor(transformColor("hex", basicColor));
             }}
           />
         ))}
       </div>
       <MoveWrapper
         onChange={onMoveSaturation}
+        className="lexicaltheme__colorpicker__movewrapper_box"
         style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
-        className="w-full relative mt-4 h-[150px] bg-[linear-gradient(transparent,_black),linear-gradient(to_right,_white,_transparent)] select-none"
       >
         <div
           style={{
             backgroundColor: selfColor.hex,
             left: saturationPosition.x,
             top: saturationPosition.y,
+            transform: `translate(-10px, -10px)`,
           }}
-          className="absolute w-5 h-5 border-2 cursor-pointer border-solid border-white rounded-full shadow-[0_0_15px_#00000026] box-border -translate-y-2.5 -translate-x-2.5"
+          className="lexicaltheme__colorpicker__movewrapper_slider"
         />
       </MoveWrapper>
       <MoveWrapper
         onChange={onMoveHue}
-        className="w-full relative mt-4 h-3 select-none rounded-xl bg-[linear-gradient(to_right,rgb(255,0,0),rgb(255,255,0),rgb(0,255,0),rgb(0,255,255),rgb(0,0,255),rgb(255,0,255),rgb(255,0,0))]"
+        className="lexicaltheme__colorpicker__movewrapper_thumb"
       >
         <div
           style={{
             left: huePosition.x,
+            transform: `translate(-10px, -4px)`,
             backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`,
           }}
-          className="absolute w-5 h-5 border-2 cursor-pointer border-solid border-white rounded-full shadow-[#0003_0_0_0_0.5px] box-border -translate-x-2.5 -translate-y-1"
+          className="lexicaltheme__colorpicker__movewrapper_slider"
         />
       </MoveWrapper>
       <div
         style={{ backgroundColor: selfColor.hex }}
-        className="border border-solid border-[#ccc] mt-4 w-full h-5"
+        className="lexicaltheme__colorpicker__hexbox"
       />
     </div>
   );

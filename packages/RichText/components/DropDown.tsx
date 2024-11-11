@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from "clsx";
 import React, {
   ReactNode,
   useCallback,
@@ -6,10 +6,10 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from 'react';
-import { createPortal } from 'react-dom';
+} from "react";
+import { createPortal } from "react-dom";
 
-import { IconArrowDropDown } from '../icons';
+import { IconArrowDropDown } from "../icons";
 
 type DropDownContextType = {
   registerItem: (ref: React.RefObject<HTMLButtonElement>) => void;
@@ -33,7 +33,7 @@ export const DropDownItem: React.FC<DropDownItemProps> = (props) => {
   const dropDownContext = React.useContext(DropDownContext);
 
   if (dropDownContext === null) {
-    throw new Error('DropDownItem must be used within a DropDown');
+    throw new Error("DropDownItem must be used within a DropDown");
   }
 
   const { registerItem } = dropDownContext;
@@ -49,8 +49,8 @@ export const DropDownItem: React.FC<DropDownItemProps> = (props) => {
       type="button"
       onClick={onClick}
       className={clsx(
-        'first:mt-2 hover:bg-[#eee] last:mb-2 text-[14px] border-0 outline-none mx-2 p-2 cursor-pointer flex items-center gap-2 rounded max-w-[250px] min-w-[100px]',
-        active ? 'bg-[#eee]' : 'bg-white'
+        "lexicaltheme__dropdown__item",
+        active && "lexicaltheme__dropdown__item_active"
       )}
     >
       {children}
@@ -80,20 +80,20 @@ const DropDownItems: React.FC<{
 
     const key = event.key;
 
-    if (['Escape', 'ArrowUp', 'ArrowDown', 'Tab'].includes(key)) {
+    if (["Escape", "ArrowUp", "ArrowDown", "Tab"].includes(key)) {
       event.preventDefault();
     }
 
-    if (key === 'Escape' || key === 'Tab') {
+    if (key === "Escape" || key === "Tab") {
       onClose();
-    } else if (key === 'ArrowUp') {
+    } else if (key === "ArrowUp") {
       setHighlightedItem((prev) => {
         if (!prev) return items[0];
 
         const index = items.indexOf(prev) - 1;
         return items[index === -1 ? items.length - 1 : index];
       });
-    } else if (key === 'ArrowDown') {
+    } else if (key === "ArrowDown") {
       setHighlightedItem((prev) => {
         if (!prev) return items[0];
 
@@ -121,7 +121,7 @@ const DropDownItems: React.FC<{
       <div
         ref={dropDownRef}
         onKeyDown={handleKeyDown}
-        className="z-[100] flex flex-col gap-y-1 fixed rounded-lg shadow-[0px_5px_10px_rgba(0,0,0,0.3)] min-h-[40px] overflow-y-auto max-h-[375px] bg-white"
+        className="lexicaltheme__dropdowns"
       >
         {children}
       </div>
@@ -134,7 +134,7 @@ interface DropDownProps {
   children: ReactNode;
   buttonLabel?: ReactNode;
   buttonAriaLabel?: string;
-  type?: 'button' | 'dropdown';
+  type?: "button" | "dropdown";
   stopCloseOnClickSelf?: boolean;
 }
 
@@ -143,7 +143,7 @@ const DropDown: React.FC<DropDownProps> = (props) => {
     children,
     buttonLabel,
     disabled = false,
-    type = 'dropdown',
+    type = "dropdown",
     stopCloseOnClickSelf,
   } = props;
 
@@ -185,10 +185,10 @@ const DropDown: React.FC<DropDownProps> = (props) => {
         }
         if (!button.contains(target as Node)) setShowDropDown(false);
       };
-      document.addEventListener('click', handle);
+      document.addEventListener("click", handle);
 
       return () => {
-        document.removeEventListener('click', handle);
+        document.removeEventListener("click", handle);
       };
     }
   }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
@@ -208,10 +208,10 @@ const DropDown: React.FC<DropDownProps> = (props) => {
       }
     };
 
-    document.addEventListener('scroll', handleButtonPositionUpdate);
+    document.addEventListener("scroll", handleButtonPositionUpdate);
 
     return () => {
-      document.removeEventListener('scroll', handleButtonPositionUpdate);
+      document.removeEventListener("scroll", handleButtonPositionUpdate);
     };
   }, [buttonRef, dropDownRef, showDropDown]);
 
@@ -222,20 +222,21 @@ const DropDown: React.FC<DropDownProps> = (props) => {
         ref={buttonRef}
         disabled={disabled}
         onClick={() => setShowDropDown(!showDropDown)}
-        className={clsx(
-          'disabled:text-gray-300 disabled:cursor-default disabled:hover:bg-transparent',
-          type === 'button'
-            ? 'min-h-[36px] min-w-[36px] flex items-center justify-center border-none cursor-pointer text-gray-700 rounded hover:bg-[#0000000d]'
-            : 'flex items-center min-w-[100px] text-[14px] justify-between hover:bg-[#0000000d] gap-2 min-h-[36px] pl-3 py-2 align-middle border-none rounded cursor-pointer bg-none',
-          showDropDown ? 'bg-gray-100' : 'bg-white'
-        )}
+        style={{ backgroundColor: showDropDown ? "#f3f4f6" : "white" }}
+        className={
+          type === "button"
+            ? "lexicaltheme__dropdown__activor_sm"
+            : "lexicaltheme__dropdown__activor"
+        }
       >
-        {buttonLabel && typeof buttonLabel === 'string' ? (
+        {buttonLabel && typeof buttonLabel === "string" ? (
           <span>{buttonLabel}</span>
         ) : (
           buttonLabel
         )}
-        {type === 'dropdown' && <IconArrowDropDown className="text-gray-400" />}
+        {type === "dropdown" && (
+          <IconArrowDropDown style={{ color: "#9ca3af " }} />
+        )}
       </button>
 
       {showDropDown &&

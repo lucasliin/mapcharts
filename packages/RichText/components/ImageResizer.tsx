@@ -1,7 +1,6 @@
 import type { LexicalEditor } from "lexical";
 import { calculateZoomLevel } from "@lexical/utils";
 import React, { useRef } from "react";
-import clsx from "clsx";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -32,8 +31,6 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
     editor,
     resizeDirections = { x: true, y: true },
   } = props;
-  const imageResizerClass =
-    "block w-1.5 h-1.5 rounded-full bg-white outline outline-solid absolute outline-blue-500 border border-solid border-white";
   const controlWrapperRef = useRef<HTMLDivElement>(null);
   const userSelect = useRef({
     priority: "",
@@ -242,70 +239,52 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
     <div ref={controlWrapperRef}>
       {resizeDirections.y ? (
         <div
-          className={clsx(
-            imageResizerClass,
-            "-top-1 left-1/2 -translate-x-1/2 cursor-n-resize"
-          )}
+          className="lexicaltheme__imageresizer lexicaltheme__imageresizer_n"
           onPointerDown={(event) => {
             handlePointerDown(event, Direction.north);
           }}
         />
       ) : null}
       <div
-        className={clsx(imageResizerClass, "-top-1 -right-1 cursor-ne-resize")}
+        className="lexicaltheme__imageresizer lexicaltheme__imageresizer_ne"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.north | Direction.east);
         }}
       />
       <div
-        className={clsx(
-          imageResizerClass,
-          "bottom-1/2 -translate-y-1/2 -right-1 cursor-e-resize"
-        )}
+        className="lexicaltheme__imageresizer lexicaltheme__imageresizer_e"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.east);
         }}
       />
       <div
-        className={clsx(
-          imageResizerClass,
-          "-bottom-1 -right-1 cursor-se-resize"
-        )}
+        className="lexicaltheme__imageresizer lexicaltheme__imageresizer_se"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.south | Direction.east);
         }}
       />
       {resizeDirections.y ? (
         <div
-          className={clsx(
-            imageResizerClass,
-            "-bottom-1 left-1/2 -translate-x-1/2 cursor-s-resize"
-          )}
+          className="lexicaltheme__imageresizer lexicaltheme__imageresizer_s"
           onPointerDown={(event) => {
             handlePointerDown(event, Direction.south);
           }}
         />
       ) : null}
       <div
-        className={clsx(
-          imageResizerClass,
-          "-bottom-1 -left-1 cursor-swe-resize"
-        )}
+        className="lexicaltheme__imageresizer lexicaltheme__imageresizer_sw"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.south | Direction.west);
         }}
       />
       <div
-        className={clsx(
-          imageResizerClass,
-          "bottom-1/2 -left-1 -translate-y-1/2 cursor-w-resize"
-        )}
+        className="lexicaltheme__imageresizer lexicaltheme__imageresizer_w"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.west);
         }}
       />
       <div
-        className={clsx(imageResizerClass, "-top-1 -left-1 cursor-nw-resize")}
+        className="lexicaltheme__imageresizer lexicaltheme__imageresizer_nw"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.north | Direction.west);
         }}

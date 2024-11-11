@@ -1,8 +1,8 @@
-import { $patchStyleText } from '@lexical/selection';
-import { $getSelection, LexicalEditor } from 'lexical';
-import { useCallback } from 'react';
+import { $patchStyleText } from "@lexical/selection";
+import { $getSelection, LexicalEditor } from "lexical";
+import { useCallback } from "react";
 
-import DropDown, { DropDownItem } from './DropDown';
+import DropDown, { DropDownItem } from "./DropDown";
 
 interface DropDownDropDownLineHeightProps {
   selectionLineHeight?: string;
@@ -14,7 +14,7 @@ const DropDownLineHeight: React.FC<DropDownDropDownLineHeightProps> = (
   props
 ) => {
   const { editor, selectionLineHeight, disabled = false } = props;
-  const lineHeightOptions = ['1', '1.2', '1.5', '1.75', '2', '2.5', '3', '4'];
+  const lineHeightOptions = ["1", "1.2", "1.5", "1.75", "2", "2.5", "3", "4"];
 
   const updateLineHeightInSelection = useCallback(
     (newValue: string) => {
@@ -23,7 +23,7 @@ const DropDownLineHeight: React.FC<DropDownDropDownLineHeightProps> = (
           const selection = $getSelection();
           if (selection !== null) {
             $patchStyleText(selection, {
-              'line-height': newValue,
+              "line-height": newValue,
             });
           }
         }
@@ -40,7 +40,7 @@ const DropDownLineHeight: React.FC<DropDownDropDownLineHeightProps> = (
           active={selectionLineHeight === lineHeight}
           onClick={() => updateLineHeightInSelection(lineHeight)}
         >
-          <span className="text">{lineHeight}</span>
+          <span>{lineHeight}</span>
         </DropDownItem>
       ))}
     </DropDown>

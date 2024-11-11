@@ -36,14 +36,18 @@ import {
   LexicalEditor,
 } from "lexical";
 import { $generateNodesFromDOM } from "@lexical/html";
+import MaxLengthPlugin from "./plugins/MaxLengthPlugin";
 
 export interface LexicalRichTextEditorProps {
+  id?: string;
+  placeholder?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
+  max?: { len: number; preventInput?: boolean };
 }
 
 const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
-  const { defaultValue, onChange } = props;
+  const { defaultValue, max, placeholder, id, onChange } = props;
 
   const { historyState } = useSharedHistoryContext();
   const {
@@ -88,6 +92,7 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
     },
     theme: theme,
   };
+
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
   const [floatingAnchorElem, setFloatingAnchorElem] =
@@ -121,9 +126,11 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="my-5 rounded-lg border-[#e2e2e2] border-solid border w-full text-black relative text-left">
+      <div className="richtext-editor" id={id}>
         <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
-        {/* {isMaxLength && <MaxLengthPlugin maxLength={30} />} */}
+        {max && (
+          <MaxLengthPlugin max={max.len} preventInput={max.preventInput} />
+        )}
         <AutoFocusPlugin />
         <ClearEditorPlugin />
 
@@ -132,12 +139,14 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
         <HashtagPlugin />
         {/* <EmojiPickerPlugin /> */}
 
-        <div className="relative bg-white">
+        <div className="richtext-editor-wrapper">
           <RichTextPlugin
             contentEditable={
-              <div className="min-h-[150px] border-none flex relative outline-none z-0 overflow-auto resize-y">
-                <div ref={onRef} className="flex-auto relative resize-y -z-[1]">
-                  <LexicalContentEditable placeholder="Enter some rich text..." />
+              <div className="richtext-editor-wrapper-box">
+                <div ref={onRef} className="ref">
+                  <LexicalContentEditable
+                    placeholder={placeholder ?? "请输入"}
+                  />
                 </div>
               </div>
             }
