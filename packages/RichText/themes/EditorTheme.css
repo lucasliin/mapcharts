@@ -3,7 +3,7 @@
 }
 
 .richtext-editor {
-  margin: 20px 0px;
+  margin: 0px;
   border-radius: 8px;
   border: 1px solid #e2e2e2;
   width: 100%;
@@ -657,6 +657,7 @@ button.toolbarbutton:disabled:hover {
 
 .toolbarbutton-active {
   background-color: #0000000d !important;
+  color: var(--lexicaltheme-primary-color);
 }
 
 .insertimage-dialog {
@@ -739,12 +740,15 @@ button.toolbarbutton:disabled:hover {
 .lexicaltheme__fileinput {
   border: 1px solid #d9d9d9;
   outline: none;
-  padding: 4px 12px;
+  padding: 3px 12px;
   border-radius: 6px;
   width: 100%;
   min-width: 250px;
   cursor: pointer;
   white-space: nowrap;
+  color: #ccc;
+  font-size: 14px;
+  text-align: center;
 }
 
 .lexicaltheme__fileinput__error {
@@ -799,7 +803,7 @@ button.toolbarbutton:disabled:hover {
   width: 1px;
   float: left;
   display: block;
-  box-shadow: inset_-1px_0_#0000001a;
+  box-shadow: inset -1px 0 #0000001a;
 }
 
 .lexicaltheme__dialogbody {
@@ -819,6 +823,17 @@ button.toolbarbutton:disabled:hover {
   z-index: 100;
   flex-grow: 0;
   flex-shrink: 1;
+}
+
+.lexicaltheme__diablogbox {
+  min-height: 100px;
+  min-width: 300px;
+  display: flex;
+  background-color: white;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  border-radius: 8px;
 }
 
 .lexicaltheme__dialogheader {
@@ -1061,6 +1076,11 @@ button.toolbarbutton:disabled:hover {
   background-color: #ddd;
 }
 
+.lexicaltheme__dialog__color-picker {
+  width: 100% !important;
+  max-width: 272px !important;
+}
+
 .lexicaltheme__dropdown__item_active {
   background-color: #eee;
 }
@@ -1160,4 +1180,285 @@ button.toolbarbutton:disabled:hover {
   right: 4px;
   font-size: 12px;
   z-index: 1;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--lexicaltheme-primary-color);
+  border-color: var(--lexicaltheme-primary-color);
+}
+input[type="checkbox"]:checked::after,
+input[type="checkbox"]:checked::before {
+  content: "";
+  height: 10px;
+  width: 2px;
+  border-radius: 10px;
+  display: block;
+  background: white;
+  position: absolute;
+  top: 1px;
+  left: 7px;
+  transform: rotate(45deg);
+}
+
+input[type="checkbox"]:checked::before {
+  content: "";
+  height: 6px;
+  width: 2px;
+  position: absolute;
+  top: 4px;
+  left: 2px;
+  transform: rotate(-45deg);
+}
+
+.lexicaltheme__link-editor {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  max-width: 400px;
+  width: 100%;
+  opacity: 0;
+  background-color: #fff;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 0 0 8px 8px;
+  transition: opacity 0.5s;
+  will-change: transform;
+}
+
+.lexicaltheme__link-editor .button {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 0 2px;
+}
+
+.lexicaltheme__link-editor .button.hovered {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-color: #eee;
+}
+
+.lexicaltheme__link-editor .button i,
+.actions i {
+  background-size: contain;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  vertical-align: -0.25em;
+}
+
+.lexicaltheme__link-editor .button.active,
+.toolbar .button.active {
+  background-color: rgb(223, 232, 250);
+}
+
+.lexicaltheme__link-editor .link-input {
+  display: block;
+  width: calc(100% - 75px);
+  box-sizing: border-box;
+  margin: 0px 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #eee;
+  font-size: 15px;
+  color: rgb(5, 5, 5);
+  border: 0;
+  outline: 0;
+  position: relative;
+  font-family: inherit;
+}
+
+.lexicaltheme__link-editor .link-view {
+  display: flex;
+  width: calc(100% - 24px);
+  margin: 8px 12px;
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 15px;
+  color: rgb(5, 5, 5);
+  border: 0;
+  outline: 0;
+  position: relative;
+  font-family: inherit;
+}
+
+.lexicaltheme__link-editor .link-view a {
+  display: block;
+  word-break: break-word;
+  width: calc(100% - 33px);
+}
+
+.lexicaltheme__link-editor div.link-edit {
+  cursor: pointer;
+}
+.lexicaltheme__link-editor div.link-edit:hover {
+  color: var(--lexicaltheme-primary-color);
+}
+
+.lexicaltheme__link-editor div.link-trash {
+  cursor: pointer;
+}
+
+.lexicaltheme__link-editor div.link-trash:hover {
+  color: #ff0000;
+}
+
+.lexicaltheme__link-editor div.link-cancel {
+  vertical-align: -0.25em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.lexicaltheme__link-editor div.link-cancel:hover {
+  color: #ff576f;
+}
+
+.lexicaltheme__link-editor div.link-confirm {
+  display: flex;
+  align-items: center;
+  vertical-align: -0.25em;
+  cursor: pointer;
+}
+
+.lexicaltheme__link-editor div.link-confirm:hover {
+  color: var(--primary-color);
+}
+
+.lexicaltheme__link-editor .link-input a {
+  color: rgb(33, 111, 219);
+  text-decoration: underline;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-right: 30px;
+  text-overflow: ellipsis;
+}
+
+.lexicaltheme__link-editor .link-input a:hover {
+  text-decoration: underline;
+}
+
+.lexicaltheme__link-editor-box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.lexicaltheme__link-editor-box .link-input-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.lexicaltheme__link-editor-box .link-input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-right: 12px;
+}
+
+.lexicaltheme__link-editor-box2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0px 12px 8px;
+}
+
+.lexicaltheme__link-editor-box2 .checkbox-label {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.selected-heading {
+  color: #3578e5;
+  position: relative;
+}
+
+.selected-heading-wrapper::before {
+  content: " ";
+  position: absolute;
+  display: inline-block;
+  left: -30px;
+  top: 4px;
+  z-index: 10;
+  height: 4px;
+  width: 4px;
+  background-color: #3578e5;
+  border: solid 4px white;
+  border-radius: 50%;
+}
+
+.normal-heading {
+  cursor: pointer;
+  line-height: 20px;
+  font-size: 16px;
+}
+
+.first-heading {
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.headings {
+  list-style: none;
+  margin-top: 0;
+  margin-left: 10px;
+  padding: 0;
+  overflow: scroll;
+  width: 200px;
+  height: 220px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.headings::-webkit-scrollbar {
+  display: none;
+}
+
+.headings::before {
+  content: " ";
+  position: absolute;
+  height: 220px;
+  width: 4px;
+  right: 240px;
+  margin-top: 5px;
+  background-color: #ccd0d5;
+  border-radius: 2px;
+}
+
+.normal-heading-wrapper {
+  margin-left: 32px;
+  position: relative;
+}
+
+.lexicaltheme__dropdown__divider {
+  min-height: 1px;
+  width: 100%;
+  display: block;
+  box-shadow: inset 0px -1px #0000001a;
 }

@@ -1,5 +1,3 @@
-import "./index.css";
-
 import {
   $createLinkNode,
   $isAutoLinkNode,
@@ -219,10 +217,10 @@ const FloatingLinkEditor: React.FC<{
   };
 
   return (
-    <div ref={editorRef} className="link-editor">
+    <div ref={editorRef} className="lexicaltheme__link-editor">
       {!isLink ? null : isLinkEditMode ? (
-        <div className="flex flex-col w-full gap-1 mt-2.5">
-          <div className="flex items-center w-full">
+        <div className="lexicaltheme__link-editor-box">
+          <div className="link-input-box">
             <input
               ref={inputRef}
               value={editedLinkUrl}
@@ -230,7 +228,7 @@ const FloatingLinkEditor: React.FC<{
               onKeyDown={(event) => monitorInputInteraction(event)}
               onChange={(event) => setEditedLinkUrl(event.target.value)}
             />
-            <div className="flex items-center justify-start gap-3 mr-3">
+            <div className="link-input-actions">
               <div
                 tabIndex={0}
                 role="button"
@@ -238,7 +236,7 @@ const FloatingLinkEditor: React.FC<{
                 onClick={handleLinkSubmission}
                 onMouseDown={(event) => event.preventDefault()}
               >
-                <IconSuccessAlt className="w-4 h-4" />
+                <IconSuccessAlt width={16} height={16} />
               </div>
               <div
                 tabIndex={0}
@@ -247,11 +245,11 @@ const FloatingLinkEditor: React.FC<{
                 onClick={() => setIsLinkEditMode(false)}
                 onMouseDown={(event) => event.preventDefault()}
               >
-                <IconClose className="w-4 h-4" />
+                <IconClose width={16} height={16} />
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 mx-3 mb-2">
+          <div className="lexicaltheme__link-editor-box2">
             <input
               type="checkbox"
               id="link-new-window"
@@ -260,10 +258,7 @@ const FloatingLinkEditor: React.FC<{
                 setTarget(event.target.checked ? "_blank" : "");
               }}
             />
-            <label
-              className="text-[14px] text-gray-500"
-              htmlFor="link-new-window"
-            >
+            <label className="checkbox-label" htmlFor="link-new-window">
               从新窗口打开
             </label>
           </div>
@@ -278,29 +273,29 @@ const FloatingLinkEditor: React.FC<{
           >
             {linkUrl}
           </a>
-          <div className="flex items-center justify-start gap-3">
+          <div className="link-input-actions">
             <div
               role="button"
               tabIndex={0}
-              className="link-edit hover:text-blue-500"
+              className="link-edit"
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => {
                 setEditedLinkUrl(linkUrl);
                 setIsLinkEditMode(true);
               }}
             >
-              <IconPencilFill className="w-4 h-4" />
+              <IconPencilFill width={16} height={16} />
             </div>
             <div
               role="button"
               tabIndex={0}
-              className="link-trash hover:text-red"
+              className="link-trash"
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => {
                 editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
               }}
             >
-              <IconTrash className="w-4 h-4" />
+              <IconTrash width={16} height={16} />
             </div>
           </div>
         </div>

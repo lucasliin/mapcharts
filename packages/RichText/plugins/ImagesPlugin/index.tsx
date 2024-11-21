@@ -110,7 +110,7 @@ export const InsertImageUploadedDialogBody: React.FC<InsertImageBodyProps> = ({
           label="图片描述"
           value={altText}
           onChange={setAltText}
-          placeholder="Descriptive alternative text"
+          placeholder="请输入图片描述"
         />
       </div>
       <DialogActions>

@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { IconCloseOutlined } from "../icons";
 
 interface PortalImplProps {
   children: ReactNode;
@@ -55,11 +56,7 @@ const PortalImpl: React.FC<PortalImplProps> = (props) => {
 
   return (
     <div role="dialog" className="lexicaltheme__dialog">
-      <div
-        tabIndex={-1}
-        ref={modalRef}
-        className="min-h-[100px] min-w-[300px] flex grow-0 bg-white flex-col relative shadow-md rounded-lg"
-      >
+      <div tabIndex={-1} ref={modalRef} className="lexicaltheme__diablogbox">
         <div className="lexicaltheme__dialogheader">
           <h2 className="lexicaltheme__dialogheader__title">{title}</h2>
           <button
@@ -68,15 +65,7 @@ const PortalImpl: React.FC<PortalImplProps> = (props) => {
             aria-label="Close modal"
             className="lexicaltheme__dialogheader__close"
           >
-            <svg
-              width={24}
-              height={24}
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              data-testid="CloseIcon"
-            >
-              <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-            </svg>
+            <IconCloseOutlined />
           </button>
         </div>
         <div>{children}</div>

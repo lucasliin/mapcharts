@@ -15,16 +15,22 @@ import {
 } from "@lexical/utils";
 import {
   $createParagraphNode,
+  $getRoot,
   $getSelection,
   $isElementNode,
+  $isParagraphNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
   $isTextNode,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
+  CLEAR_EDITOR_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   ElementFormatType,
+  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
+  INDENT_CONTENT_COMMAND,
+  OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   TextFormatType,
@@ -39,15 +45,21 @@ import { getSelectedNode } from "../../utils/getSelectedNode";
 import DropdownColorPicker from "../../components/DropDownColorPicker";
 import BlockFormatDropDown from "../../components/DropDownBlock";
 import DropDownLineHeight from "../../components/DropDownLineHeight";
-import DropDownAlignment from "../../components/DropDownAlignment";
 import {
   IconBackgound,
-  IconCode,
+  IconCloseOutlined,
   IconFileImage,
   IconFontColor,
   IconHorizontalRule,
+  IconIndent,
+  IconJustify,
   IconLink,
+  IconOutdent,
   IconRedo,
+  IconTable,
+  IconTextCenter,
+  IconTextLeft,
+  IconTextRight,
   IconTypeBold,
   IconTypeClear,
   IconTypeItalic,
@@ -64,6 +76,7 @@ import { sanitizeUrl } from "../../utils/url";
 import DropdownEmoji from "../../components/DropDownEmoji";
 import DropDownLetterSpacing from "../../components/DropDownLetterSpacing";
 import { InsetYouTubeDialog } from "../YouTubePlugin";
+import { InsertTableDialog } from "../TablePlugin";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -106,15 +119,20 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = (props) => {
   );
 };
 
-const ToolbarPlugin: React.FC<{
+interface ToolbarPluginProps {
+  disabled?: boolean;
   setIsLinkEditMode: Dispatch<boolean>;
-}> = ({ setIsLinkEditMode }) => {
+}
+
+const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
+  const { disabled, setIsLinkEditMode } = props;
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const toolbarRef = useRef(null);
 
   const [blockType, setBlockType] =
     useState<keyof typeof blockTypeToBlockName>("paragraph");
+  const [isEditorEmpty, setIsEditorEmpty] = useState(true);
 
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -130,7 +148,6 @@ const ToolbarPlugin: React.FC<{
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
 
-  const [isCode, setIsCode] = useState(false);
   const [isLink, setIsLink] = useState(false);
   const [isSubscript, setIsSubscript] = useState(false);
   const [isSuperscript, setIsSuperscript] = useState(false);
@@ -224,7 +241,6 @@ const ToolbarPlugin: React.FC<{
       setIsStrikethrough(selection.hasFormat("strikethrough"));
       setIsSubscript(selection.hasFormat("subscript"));
       setIsSuperscript(selection.hasFormat("superscript"));
-      setIsCode(selection.hasFormat("code"));
 
       setFontSize(
         $getSelectionStyleValueForProperty(selection, "font-size", "16px")
@@ -257,6 +273,21 @@ const ToolbarPlugin: React.FC<{
       activeEditor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
           $updateToolbar();
+        });
+        editor.getEditorState().read(() => {
+          const root = $getRoot();
+          const children = root.getChildren();
+
+          if (children.length > 1) {
+            setIsEditorEmpty(false);
+          } else {
+            if ($isParagraphNode(children[0])) {
+              const paragraphChildren = children[0].getChildren();
+              setIsEditorEmpty(paragraphChildren.length === 0);
+            } else {
+              setIsEditorEmpty(false);
+            }
+          }
         });
       }),
       activeEditor.registerCommand<boolean>(
@@ -377,13 +408,13 @@ const ToolbarPlugin: React.FC<{
     <div ref={toolbarRef} className="lexicaltheme__toolbar">
       {/* Undo/Redo */}
       <ToolbarButton
-        disabled={!canUndo}
+        disabled={!canUndo || disabled}
         onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
       >
         <IconUndo />
       </ToolbarButton>
       <ToolbarButton
-        disabled={!canRedo}
+        disabled={!canRedo || disabled}
         onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}
       >
         <IconRedo />
@@ -391,84 +422,151 @@ const ToolbarPlugin: React.FC<{
       <Divider />
 
       {/* font size */}
-      <DropDownFontSize selectionFontSize={fontSize} editor={activeEditor} />
-      <DropDownLineHeight
-        selectionLineHeight={lineHeight}
+      <DropDownFontSize
+        disabled={disabled}
+        selectionFontSize={fontSize}
         editor={activeEditor}
       />
-      <DropDownLetterSpacing
-        selectionLetterSpacing={letterSpacing}
+      <DropDownLineHeight
+        disabled={disabled}
         editor={activeEditor}
+        selectionLineHeight={lineHeight}
+      />
+      <DropDownLetterSpacing
+        disabled={disabled}
+        editor={activeEditor}
+        selectionLetterSpacing={letterSpacing}
       />
       <Divider />
 
       {/* font style */}
       <DropdownColorPicker
         color={fontColor}
-        onChange={onFontColorSelect}
+        disabled={disabled}
         icon={<IconFontColor />}
+        onChange={onFontColorSelect}
       />
       <DropdownColorPicker
         color={bgColor}
-        onChange={onBgColorSelect}
+        disabled={disabled}
         icon={<IconBackgound />}
+        onChange={onBgColorSelect}
       />
-      <ToolbarButton active={isBold} onClick={() => formatText("bold")}>
+      <ToolbarButton
+        active={isBold}
+        disabled={disabled}
+        onClick={() => formatText("bold")}
+      >
         <IconTypeBold />
       </ToolbarButton>
-      <ToolbarButton active={isItalic} onClick={() => formatText("italic")}>
+      <ToolbarButton
+        active={isItalic}
+        disabled={disabled}
+        onClick={() => formatText("italic")}
+      >
         <IconTypeItalic />
       </ToolbarButton>
       <ToolbarButton
+        disabled={disabled}
         active={isUnderline}
         onClick={() => formatText("underline")}
       >
         <IconTypeUnderline />
       </ToolbarButton>
       <ToolbarButton
+        disabled={disabled}
         active={isStrikethrough}
         onClick={() => formatText("strikethrough")}
       >
         <IconTypeStrikethrough />
       </ToolbarButton>
-      <ToolbarButton active={isCode} onClick={() => formatText("code")}>
-        <IconCode />
-      </ToolbarButton>
       <Divider />
 
       {/* script/subscript/superscript */}
       <ToolbarButton
+        disabled={disabled}
         active={isSubscript}
         onClick={() => formatText("subscript")}
       >
         <IconTypeSubscript />
       </ToolbarButton>
       <ToolbarButton
+        disabled={disabled}
         active={isSuperscript}
         onClick={() => formatText("superscript")}
       >
         <IconTypeSuperscript />
       </ToolbarButton>
-      <ToolbarButton onClick={clearFormatting}>
+      <ToolbarButton onClick={clearFormatting} disabled={disabled}>
         <IconTypeClear />
       </ToolbarButton>
-      <DropdownEmoji editor={activeEditor} />
+      <DropdownEmoji editor={activeEditor} disabled={disabled} />
 
       <Divider />
 
       {/* alignment */}
-      <DropDownAlignment value={elementFormat} editor={activeEditor} />
+      <ToolbarButton
+        disabled={disabled}
+        onClick={() =>
+          editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)
+        }
+      >
+        <IconOutdent />
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={disabled}
+        onClick={() =>
+          editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)
+        }
+      >
+        <IconIndent />
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={disabled}
+        active={elementFormat === "left"}
+        onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")}
+      >
+        <IconTextLeft />
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={disabled}
+        active={elementFormat === "center"}
+        onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}
+      >
+        <IconTextCenter />
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={disabled}
+        active={elementFormat === "right"}
+        onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}
+      >
+        <IconTextRight />
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={disabled}
+        active={elementFormat === "justify"}
+        onClick={() =>
+          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")
+        }
+      >
+        <IconJustify />
+      </ToolbarButton>
       <Divider />
 
       {/*  */}
       {blockType in blockTypeToBlockName && activeEditor === editor && (
         <>
-          <BlockFormatDropDown blockType={blockType} editor={activeEditor} />
+          <BlockFormatDropDown
+            blockType={blockType}
+            editor={activeEditor}
+            disabled={disabled}
+          />
           <Divider />
         </>
       )}
 
       <ToolbarButton
+        disabled={disabled}
         onClick={() => {
           showModal("插入图片", (onClose) => (
             <InsertImageDialog activeEditor={activeEditor} onClose={onClose} />
@@ -478,6 +576,7 @@ const ToolbarPlugin: React.FC<{
         <IconFileImage />
       </ToolbarButton>
       <ToolbarButton
+        disabled={disabled}
         onClick={() => {
           showModal(`添加 YouTube 视频`, (onClose) => (
             <InsetYouTubeDialog activeEditor={activeEditor} onClose={onClose} />
@@ -486,15 +585,33 @@ const ToolbarPlugin: React.FC<{
       >
         <IconYoutube />
       </ToolbarButton>
-      <ToolbarButton active={isLink} onClick={insertLink}>
+      <ToolbarButton disabled={disabled} active={isLink} onClick={insertLink}>
         <IconLink />
       </ToolbarButton>
       <ToolbarButton
+        disabled={disabled}
         onClick={() =>
           editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)
         }
       >
         <IconHorizontalRule />
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={() => {
+          showModal("插入表格", (onClose) => (
+            <InsertTableDialog activeEditor={activeEditor} onClose={onClose} />
+          ));
+        }}
+      >
+        <IconTable />
+      </ToolbarButton>
+
+      <Divider />
+      <ToolbarButton
+        disabled={isEditorEmpty || disabled}
+        onClick={() => editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined)}
+      >
+        <IconCloseOutlined />
       </ToolbarButton>
       {modal}
     </div>

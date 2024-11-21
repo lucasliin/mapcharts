@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+// import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
@@ -7,6 +7,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
+import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin";
@@ -24,6 +25,8 @@ import EmojisPlugin from "./plugins/EmojisPlugin";
 import NewMentionsPlugin from "./plugins/MentionsPlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
 import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
+import TableCellResizerPlugin from "./plugins/TableCellResizerPlugin";
+import TableActionMenuPlugin from "./plugins/TableActionMenuPlugin";
 import LinkPlugin from "./plugins/LinkPlugin";
 import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextFormatToolbarPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
@@ -37,21 +40,52 @@ import {
 } from "lexical";
 import { $generateNodesFromDOM } from "@lexical/html";
 import MaxLengthPlugin from "./plugins/MaxLengthPlugin";
+import { useDebounceEffect } from "ahooks";
+import TableHoverActionsPlugin from "./plugins/TableHoverActionsPlugin";
+import TableOfContentsPlugin from "./plugins/TableOfContentsPlugin";
+import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 export interface LexicalRichTextEditorProps {
   id?: string;
+  disabled?: boolean;
   placeholder?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
   max?: { len: number; preventInput?: boolean };
+  status?: "error" | "success" | "warning" | "info" | "default";
 }
 
 const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
-  const { defaultValue, max, placeholder, id, onChange } = props;
+  const {
+    id,
+    max,
+    disabled,
+    onChange,
+    placeholder,
+    defaultValue,
+    status = "default",
+  } = props;
+
+  const borderColor = new Map<string, string>([
+    ["default", "#e2e2e2"],
+    ["error", "#FF0000"],
+    ["success", "#4caf50"],
+    ["warning", "#ff9800"],
+    ["info", "#2196f3"],
+  ]);
+
+  const [richTextValue, setRichTextValue] = useState<string>();
+  const [count, setCount] = useState<number>(0);
 
   const { historyState } = useSharedHistoryContext();
   const {
-    settings: { isCharLimit, isCharLimitUtf8 },
+    settings: {
+      isCharLimit,
+      tableCellMerge,
+      isCharLimitUtf8,
+      showTableOfContents,
+      tableCellBackgroundColor,
+    },
   } = useSettings();
 
   function prepopulatedRichText(params: {
@@ -80,6 +114,7 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
   }
 
   const initialConfig = {
+    editable: !disabled,
     editorState:
       defaultValue !== undefined
         ? (editor: LexicalEditor) =>
@@ -110,7 +145,7 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
   useEffect(() => {
     const updateViewPortWidth = () => {
       const isNextSmallWidthViewport =
-        CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
+        CAN_USE_DOM && window.matchMedia("(max-width: 860px)").matches;
 
       if (isNextSmallWidthViewport !== isSmallWidthViewport) {
         setIsSmallWidthViewport(isNextSmallWidthViewport);
@@ -124,14 +159,29 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
     };
   }, [isSmallWidthViewport]);
 
+  useDebounceEffect(() => {
+    if (count === 0) {
+      setCount(count + 1);
+      return;
+    }
+    onChange && onChange(richTextValue ?? "");
+  }, [richTextValue]);
+
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="richtext-editor" id={id}>
-        <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
+      <div
+        id={id}
+        className="richtext-editor"
+        style={{ borderColor: borderColor.get(status) }}
+      >
+        <ToolbarPlugin
+          setIsLinkEditMode={setIsLinkEditMode}
+          disabled={disabled}
+        />
         {max && (
           <MaxLengthPlugin max={max.len} preventInput={max.preventInput} />
         )}
-        <AutoFocusPlugin />
+        {/* <AutoFocusPlugin /> */}
         <ClearEditorPlugin />
 
         <NewMentionsPlugin />
@@ -165,6 +215,11 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
 
           <ListPlugin />
           <CheckListPlugin />
+          <TablePlugin
+            hasCellMerge={tableCellMerge}
+            hasCellBackgroundColor={tableCellBackgroundColor}
+          />
+          <TableCellResizerPlugin />
           <ClickableLinkPlugin />
           <HorizontalRulePlugin />
 
@@ -183,17 +238,24 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
                 anchorElem={floatingAnchorElem}
                 setIsLinkEditMode={setIsLinkEditMode}
               />
+              <TableActionMenuPlugin
+                anchorElem={floatingAnchorElem}
+                cellMerge={true}
+              />
+              <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
             </>
           )}
-          <SerializationPlugin
-            onChange={(value) => onChange && onChange(value)}
-          />
+          <SerializationPlugin onChange={(value) => setRichTextValue(value)} />
           {(isCharLimit || isCharLimitUtf8) && (
             <CharacterLimitPlugin
               charset={isCharLimit ? "UTF-16" : "UTF-8"}
               maxLength={5}
             />
           )}
+
+          {/* <TreeViewPlugin /> */}
+
+          <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
         </div>
       </div>
     </LexicalComposer>

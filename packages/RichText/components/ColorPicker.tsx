@@ -6,6 +6,7 @@ let skipAddingToHistoryStack = false;
 
 interface ColorPickerProps {
   color: string;
+  className?: string;
   onChange?: (value: string, skipHistoryStack: boolean) => void;
 }
 
@@ -238,7 +239,7 @@ const MoveWrapper: React.FC<MoveWrapperProps> = (props) => {
 };
 
 const ColorPicker: React.FC<Readonly<ColorPickerProps>> = (props) => {
-  const { color, onChange } = props;
+  const { color, onChange, className } = props;
   const [selfColor, setSelfColor] = useState(transformColor("hex", color));
   const [inputColor, setInputColor] = useState(color);
   const innerDivRef = useRef(null);
@@ -306,7 +307,7 @@ const ColorPicker: React.FC<Readonly<ColorPickerProps>> = (props) => {
     <div
       ref={innerDivRef}
       style={{ width: WIDTH }}
-      className="lexicaltheme__colorpicker"
+      className={clsx("lexicaltheme__colorpicker", className)}
     >
       <div className="lexicaltheme__colorpicker__wrapper">
         <label style={{ fontSize: "14px" }} htmlFor="color-picker-input">

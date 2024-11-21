@@ -115,7 +115,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
     const popupCharStylesEditorElem = popupCharStylesEditorRef.current;
     const nativeSelection = window.getSelection();
 
-    if (popupCharStylesEditorElem === null) {
+    if (popupCharStylesEditorElem === null || isLink) {
       return;
     }
 

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   createContext,
   ReactNode,
@@ -6,12 +6,13 @@ import {
   useContext,
   useMemo,
   useState,
-} from 'react';
+} from "react";
 
 const hostName = window.location.hostname;
+
 export const isDevPlayground: boolean =
-  hostName !== 'playground.lexical.dev' &&
-  hostName !== 'lexical-playground.vercel.app';
+  hostName !== "playground.lexical.dev" &&
+  hostName !== "lexical-playground.vercel.app";
 
 export const DEFAULT_SETTINGS = {
   disableBeforeInput: false,
@@ -24,6 +25,9 @@ export const DEFAULT_SETTINGS = {
   measureTypingPerf: false,
   shouldUseLexicalContextMenu: false,
   showNestedEditorTreeView: false,
+  showTableOfContents: false,
+  tableCellBackgroundColor: true,
+  tableCellMerge: true,
 } as const;
 
 // These are mutated in setupEnv
@@ -49,7 +53,7 @@ function setURLParam(param: SettingName, value: null | boolean) {
     params.delete(param);
   }
   url.search = params.toString();
-  window.history.pushState(null, '', url.toString());
+  window.history.pushState(null, "", url.toString());
 }
 
 const Context: React.Context<SettingsContextShape> = createContext({
