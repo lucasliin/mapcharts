@@ -1,10 +1,21 @@
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import { $isListNode, ListNode } from "@lexical/list";
+import {
+  $isListNode,
+  INSERT_CHECK_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
+  ListNode,
+} from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
+import {
+  $createQuoteNode,
+  $isHeadingNode,
+  $isQuoteNode,
+} from "@lexical/rich-text";
 import {
   $getSelectionStyleValueForProperty,
   $patchStyleText,
+  $setBlocksType,
 } from "@lexical/selection";
 import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import {
@@ -47,6 +58,8 @@ import BlockFormatDropDown from "../../components/DropDownBlock";
 import DropDownLineHeight from "../../components/DropDownLineHeight";
 import {
   IconBackgound,
+  IconChatSquareQuote,
+  IconChecklist,
   IconCloseOutlined,
   IconFileImage,
   IconFontColor,
@@ -54,6 +67,8 @@ import {
   IconIndent,
   IconJustify,
   IconLink,
+  IconListOl,
+  IconListUl,
   IconOutdent,
   IconRedo,
   IconTable,
@@ -404,6 +419,15 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
     }
   }, [activeEditor, isLink, setIsLinkEditMode]);
 
+  const formatParagraph = () => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $setBlocksType(selection, () => $createParagraphNode());
+      }
+    });
+  };
+
   return (
     <div ref={toolbarRef} className="lexicaltheme__toolbar">
       {/* Undo/Redo */}
@@ -553,17 +577,64 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
       </ToolbarButton>
       <Divider />
 
-      {/*  */}
-      {blockType in blockTypeToBlockName && activeEditor === editor && (
-        <>
-          <BlockFormatDropDown
-            blockType={blockType}
-            editor={activeEditor}
-            disabled={disabled}
-          />
-          <Divider />
-        </>
-      )}
+      <ToolbarButton
+        disabled={disabled}
+        active={blockType === "bullet"}
+        onClick={() => {
+          if (blockType !== "bullet") {
+            editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+          } else {
+            formatParagraph();
+          }
+        }}
+      >
+        <IconListUl />
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={disabled}
+        active={blockType === "number"}
+        onClick={() => {
+          if (blockType !== "number") {
+            editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+          } else {
+            formatParagraph();
+          }
+        }}
+      >
+        <IconListOl />
+      </ToolbarButton>
+      <ToolbarButton
+        disabled={disabled}
+        active={blockType === "check"}
+        onClick={() => {
+          if (blockType !== "check") {
+            editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
+          } else {
+            formatParagraph();
+          }
+        }}
+      >
+        <IconChecklist />
+      </ToolbarButton>
+
+      <ToolbarButton
+        disabled={disabled}
+        active={blockType === "quote"}
+        onClick={() => {
+          if (blockType !== "quote") {
+            editor.update(() => {
+              const selection = $getSelection();
+              $setBlocksType(selection, () => $createQuoteNode());
+            });
+          } else {
+            formatParagraph();
+          }
+        }}
+      >
+        <IconChatSquareQuote />
+      </ToolbarButton>
+
+      <Divider />
 
       <ToolbarButton
         disabled={disabled}

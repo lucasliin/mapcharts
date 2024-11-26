@@ -155,7 +155,7 @@ export const InsertImageDialog: React.FC<{
         <div style={{ padding: "20px" }}>
           <DialogButtonsList>
             <Button onClick={() => setMode("url")}>通过 URL 上传</Button>
-            <Button onClick={() => setMode("file")}>选择文件</Button>
+            {/* <Button onClick={() => setMode("file")}>选择文件</Button> */}
           </DialogButtonsList>
         </div>
       )}

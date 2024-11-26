@@ -537,22 +537,26 @@ function TableActionMenu({
         在底部添加行
       </button>
       <Divider />
-      <button
-        type="button"
-        disabled={selectionCounts.columns > 1}
-        className="lexicaltheme__dropdown__item"
-        onClick={() => insertTableColumnAtSelection(false)}
-      >
-        在左侧添加列
-      </button>
-      <button
-        type="button"
-        disabled={selectionCounts.columns > 1}
-        className="lexicaltheme__dropdown__item"
-        onClick={() => insertTableColumnAtSelection(true)}
-      >
-        在右侧添加列
-      </button>
+      {selectionCounts.columns > 1 ? null : (
+        <button
+          type="button"
+          disabled={selectionCounts.columns > 1}
+          className="lexicaltheme__dropdown__item"
+          onClick={() => insertTableColumnAtSelection(false)}
+        >
+          在左侧添加列
+        </button>
+      )}
+      {selectionCounts.columns > 1 ? null : (
+        <button
+          type="button"
+          disabled={selectionCounts.columns > 1}
+          className="lexicaltheme__dropdown__item"
+          onClick={() => insertTableColumnAtSelection(true)}
+        >
+          在右侧添加列
+        </button>
+      )}
       <Divider />
       <button
         type="button"

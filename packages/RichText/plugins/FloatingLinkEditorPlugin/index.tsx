@@ -249,7 +249,10 @@ const FloatingLinkEditor: React.FC<{
               </div>
             </div>
           </div>
-          <div className="lexicaltheme__link-editor-box2">
+          <div
+            className="lexicaltheme__checkboxInput"
+            style={{ padding: "0px 10px" }}
+          >
             <input
               type="checkbox"
               id="link-new-window"

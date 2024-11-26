@@ -5,10 +5,10 @@
   overflow-x: scroll;
   table-layout: fixed;
   width: fit-content;
-  margin: 0px;
+  margin: 8px 0px;
 }
 
-.lexicaltheme__tableRowStriping tr:nth-child(even) {
+.lexicaltheme__tableRowStriping tr:nth-of-type(even) {
   background-color: #f2f5fb;
 }
 

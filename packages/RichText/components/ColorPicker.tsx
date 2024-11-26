@@ -367,10 +367,10 @@ const ColorPicker: React.FC<Readonly<ColorPickerProps>> = (props) => {
           className="lexicaltheme__colorpicker__movewrapper_slider"
         />
       </MoveWrapper>
-      <div
+      {/* <div
         style={{ backgroundColor: selfColor.hex }}
         className="lexicaltheme__colorpicker__hexbox"
-      />
+      /> */}
     </div>
   );
 };
