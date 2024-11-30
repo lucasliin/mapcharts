@@ -6,7 +6,6 @@ const SvgUndo = (props: SVGProps<SVGSVGElement>) => (
     width={16}
     height={16}
     fill="currentColor"
-    className="undo_svg__bi undo_svg__bi-arrow-counterclockwise"
     {...props}
   >
     <path

@@ -6,7 +6,6 @@ const SvgJustify = (props: SVGProps<SVGSVGElement>) => (
     width={16}
     height={16}
     fill="currentColor"
-    className="justify_svg__bi justify_svg__bi-justify"
     {...props}
   >
     <path

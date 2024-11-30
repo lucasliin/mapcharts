@@ -12,37 +12,33 @@
   text-align: left;
 }
 
-.richtext-editor-wrapper {
-  position: relative;
-  background-color: white;
-  border-radius: 0px 0px 8px 8px;
-}
-
-.richtext-editor-wrapper-box {
+.editor-scroller {
   min-height: 150px;
-  border: none;
+  border: 0;
   display: flex;
   position: relative;
-  outline: none;
+  outline: 0;
   z-index: 0;
   overflow: auto;
   resize: vertical;
 }
 
-.richtext-editor-wrapper-box .ref {
-  flex: 1 1 auto;
+.editor {
+  flex: auto;
   position: relative;
   resize: vertical;
   z-index: -1;
 }
 
-.editor-cell {
-  min-height: 150px;
-  resize: none;
-  caret-color: rgb(5, 5, 5);
+.ContentEditable__root {
+  border: 0;
+  font-size: 16px;
+  display: block;
   position: relative;
-  outline: none;
+  outline: 0;
   padding: 16px 24px;
+  min-height: 150px;
+  caret-color: rgb(5, 5, 5);
 }
 
 .editor-cell-placeholder {
@@ -57,7 +53,7 @@
   left: 24px;
 }
 
-.editor-cell .lexicaltheme__link {
+.ContentEditable__root .lexicaltheme__link {
   pointer-events: none;
 }
 
@@ -326,7 +322,7 @@
   user-select: none;
 }
 .lexicaltheme__embedBlockFocus {
-  outline: 2px solid var(--primary-color);
+  outline: 2px solid var(--lexicaltheme-primary-color);
 }
 .lexicaltheme__layoutContainer {
   display: grid;
@@ -354,7 +350,7 @@
   line-height: 2px;
 }
 .lexicaltheme__hr.selected {
-  outline: 2px solid var(--primary-color);
+  outline: 2px solid var(--lexicaltheme-primary-color);
   user-select: none;
 }
 
@@ -516,7 +512,7 @@ span.inline-editor-image {
 }
 
 .inline-editor-image img.focused {
-  outline: 2px solid var(--primary-color);
+  outline: 2px solid var(--lexicaltheme-primary-color);
 }
 
 .inline-editor-image img.focused.draggable {
@@ -657,7 +653,7 @@ button.toolbarbutton:disabled:hover {
 
 .toolbarbutton-active {
   background-color: #0000000d !important;
-  color: var(--lexicaltheme-primary-color);
+  color: var(--lexicaltheme-primary-color) !important;
 }
 
 .insertimage-dialog {
@@ -666,6 +662,14 @@ button.toolbarbutton:disabled:hover {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.editimage-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  max-width: 500px;
 }
 
 .insertimage-dialog-button {
@@ -716,26 +720,47 @@ button.toolbarbutton:disabled:hover {
   margin-inline-end: 8px;
 }
 
-.lexicaltheme__textinput {
+.lexicaltheme__textinputwrapper {
   border: 1px solid #d9d9d9;
   outline: none;
   padding: 4px 12px;
   border-radius: 6px;
   width: 100%;
   min-width: 250px;
+  display: flex;
+  align-items: center;
+}
+
+.lexicaltheme__textinput {
+  border: none;
+  outline: none;
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  background-color: transparent;
+}
+
+.lexicaltheme__textinput_suffix {
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .lexicaltheme__textinput::placeholder {
   color: #d1d5db;
 }
 
-.lexicaltheme__textinput:hover {
+.lexicaltheme__textinputwrapper:hover {
   border-color: var(--lexicaltheme-primary-color);
 }
 
-.lexicaltheme__textinput:focus {
+.lexicaltheme__textinputwrapperfocused {
   border-color: var(--lexicaltheme-primary-color);
   box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+}
+
+.lexicaltheme__textinputwrapperdisabled {
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .lexicaltheme__fileinput {
@@ -839,7 +864,7 @@ button.toolbarbutton:disabled:hover {
 
 .lexicaltheme__dialogheader {
   padding: 0px 20px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #e5e7eb;
   height: 56px;
   display: flex;
   align-items: center;
@@ -1042,13 +1067,13 @@ button.toolbarbutton:disabled:hover {
 }
 
 .lexicaltheme__dropdown__activor_sm:hover {
-  background-color: #0000000d !important;
+  background-color: #0000000d;
 }
 
 .lexicaltheme__dropdown__activor_sm:disabled {
   color: #d1d5db;
   cursor: default;
-  background-color: transparent;
+  background-color: white;
 }
 
 .lexicaltheme__dropdown__activor {
@@ -1067,14 +1092,18 @@ button.toolbarbutton:disabled:hover {
   cursor: pointer;
 }
 
+.lexicaltheme__dropdown__activor_active {
+  background-color: #f3f4f6;
+}
+
 .lexicaltheme__dropdown__activor:hover {
-  background-color: #0000000d !important;
+  background-color: #0000000d;
 }
 
 .lexicaltheme__dropdown__activor:disabled {
   color: #d1d5db;
   cursor: default;
-  background-color: transparent;
+  background-color: white;
 }
 
 .lexicaltheme__dropdown__item {
@@ -1131,6 +1160,30 @@ button.toolbarbutton:disabled:hover {
 }
 .lexicaltheme__dropdown__emoji_item:hover {
   scale: 1.5;
+}
+
+.lexicaltheme__image__edit {
+  position: absolute;
+  top: 4px;
+  right: 0px;
+  transform: translateX(100%);
+  cursor: pointer;
+}
+
+.lexicaltheme__image__edit:hover {
+  color: var(--lexicaltheme-primary-color);
+}
+
+.lexicaltheme__image__delete {
+  position: absolute;
+  top: 24px;
+  right: 0px;
+  transform: translateX(100%);
+  cursor: pointer;
+}
+
+.lexicaltheme__image__delete:hover {
+  color: red;
 }
 
 .lexicaltheme__imageresizer {
@@ -1255,8 +1308,8 @@ input[type="checkbox"]:checked::before {
   width: 100%;
   opacity: 0;
   background-color: #fff;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-  border-radius: 0 0 8px 8px;
+  box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px 8px 0px 0px;
   transition: opacity 0.5s;
   will-change: transform;
 }
@@ -1294,9 +1347,8 @@ input[type="checkbox"]:checked::before {
 
 .lexicaltheme__link-editor .link-input {
   display: block;
-  width: calc(100% - 75px);
+  flex: 1;
   box-sizing: border-box;
-  margin: 0px 12px;
   padding: 8px 12px;
   border-radius: 8px;
   background-color: #eee;
@@ -1308,61 +1360,18 @@ input[type="checkbox"]:checked::before {
   font-family: inherit;
 }
 
-.lexicaltheme__link-editor .link-view {
-  display: flex;
-  width: calc(100% - 24px);
-  margin: 8px 12px;
-  padding: 8px 12px;
-  border-radius: 15px;
-  font-size: 15px;
-  color: rgb(5, 5, 5);
+.lexicaltheme__link-editor .link-confirm {
+  cursor: pointer;
   border: 0;
   outline: 0;
-  position: relative;
-  font-family: inherit;
+  background-color: white;
+  border-radius: 4px;
+  padding: 8px 12px;
 }
 
-.lexicaltheme__link-editor .link-view a {
-  display: block;
-  word-break: break-word;
-  width: calc(100% - 33px);
-}
-
-.lexicaltheme__link-editor div.link-edit {
-  cursor: pointer;
-}
-.lexicaltheme__link-editor div.link-edit:hover {
+.lexicaltheme__link-editor .link-confirm:hover {
   color: var(--lexicaltheme-primary-color);
-}
-
-.lexicaltheme__link-editor div.link-trash {
-  cursor: pointer;
-}
-
-.lexicaltheme__link-editor div.link-trash:hover {
-  color: #ff0000;
-}
-
-.lexicaltheme__link-editor div.link-cancel {
-  vertical-align: -0.25em;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.lexicaltheme__link-editor div.link-cancel:hover {
-  color: #ff576f;
-}
-
-.lexicaltheme__link-editor div.link-confirm {
-  display: flex;
-  align-items: center;
-  vertical-align: -0.25em;
-  cursor: pointer;
-}
-
-.lexicaltheme__link-editor div.link-confirm:hover {
-  color: var(--primary-color);
+  background-color: rgb(59 130 246 / 0.1);
 }
 
 .lexicaltheme__link-editor .link-input a {
@@ -1383,13 +1392,14 @@ input[type="checkbox"]:checked::before {
   flex-direction: column;
   width: 100%;
   gap: 4px;
-  margin: 10px 0px;
+  margin: 10px 12px;
 }
 
 .lexicaltheme__link-editor-box .link-input-box {
   display: flex;
   align-items: center;
   width: 100%;
+  gap: 10px;
 }
 
 .link-input-actions {
@@ -1397,7 +1407,6 @@ input[type="checkbox"]:checked::before {
   align-items: center;
   justify-content: flex-start;
   gap: 12px;
-  margin-right: 12px;
 }
 
 .lexicaltheme__checkboxInput {

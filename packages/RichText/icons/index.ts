@@ -38,3 +38,4 @@ export { default as IconArrowDropDown } from "./ArrowDropDown";
 export { default as IconCloseOutlined } from "./CloseOutlined";
 export { default as IconTable } from "./Table";
 export { default as IconSettings } from "./Settings";
+export { default as IconImage } from "./Image";

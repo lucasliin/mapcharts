@@ -1,3 +1,3 @@
-import LexicalRichTextEditor from "./RichText";
+import LnkstoneEditor from "./RichText";
 
-export default LexicalRichTextEditor;
+export default LnkstoneEditor;

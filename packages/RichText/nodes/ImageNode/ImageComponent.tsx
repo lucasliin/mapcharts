@@ -25,13 +25,23 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 import ImageResizer from "../../components/ImageResizer";
 
-import { $isImageNode } from ".";
+import { $isImageNode, SerializedImageNode } from ".";
+import { IconImage, IconTrash } from "../../icons";
+import Modal from "../../components/Modal";
+import TextInput from "../../components/TextInput";
+import CheckInput from "../../components/CheckInput";
+import { DialogActions } from "../../components/Dialog";
+import { set } from "lodash";
 
 const imageCache = new Set();
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> =
   createCommand("RIGHT_CLICK_IMAGE_COMMAND");
+// eslint-disable-next-line react-refresh/only-export-components
+export const DELETE_IMAGE_COMMAND: LexicalCommand<MouseEvent> = createCommand(
+  "DELETE_IMAGE_COMMAND"
+);
 
 function useSuspenseImage(src: string) {
   if (!imageCache.has(src)) {
@@ -49,66 +59,158 @@ function useSuspenseImage(src: string) {
   }
 }
 
-function LazyImage({
-  altText,
-  className,
-  imageRef,
-  src,
-  width,
-  height,
-  maxWidth,
-  onError,
-}: {
+interface LazyImageProps {
   altText: string;
   className: string | null;
-  height: "inherit" | number;
+  height: string | number;
   imageRef: { current: null | HTMLImageElement };
-  maxWidth: number;
+  maxWidth?: number;
   src: string;
-  width: "inherit" | number;
+  width: string | number;
   onError: () => void;
-}): JSX.Element {
+}
+
+const LazyImage: React.FC<LazyImageProps> = (props) => {
+  const {
+    altText,
+    className,
+    imageRef,
+    src,
+    width,
+    height,
+    maxWidth,
+    onError,
+  } = props;
+
   useSuspenseImage(src);
+
   return (
     <img
-      className={className || undefined}
       src={src}
       alt={altText}
       ref={imageRef}
-      style={{
-        height,
-        maxWidth,
-        width,
-      }}
       onError={onError}
       draggable="false"
+      className={className || undefined}
+      style={{ height, maxWidth, width }}
     />
   );
-}
+};
 
-const BrokenImage: React.FC<{
+interface BrokenImageProps {
   focuesd: boolean;
   imageRef: { current: null | HTMLImageElement };
-}> = ({ focuesd, imageRef }) => {
+}
+
+const BrokenImage: React.FC<BrokenImageProps> = ({ focuesd, imageRef }) => {
   return (
     <img
-      src="data:image/png;base64,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"
+      ref={imageRef}
+      draggable="false"
       style={{ height: 200, opacity: 0.2, width: 200 }}
       className={focuesd ? "outline-2 outline outline-blue-500" : ""}
-      draggable="false"
-      ref={imageRef}
+      src="data:image/png;base64,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"
     />
+  );
+};
+
+interface EditImageDialogProps {
+  onClose: () => void;
+  imageNode: SerializedImageNode;
+  onSave: (value: {
+    width: string | number;
+    src: string;
+    altText: string;
+  }) => void;
+}
+
+const EditImageDialog: React.FC<EditImageDialogProps> = (props) => {
+  const { imageNode, onSave, onClose } = props;
+
+  const [width, setWidth] = useState<string>("");
+  const [widthSuffix, setWidthSuffix] = useState<string>("px");
+  const [src, setSrc] = useState<string>("");
+  const [altText, setAltText] = useState<string>("");
+
+  const coverImageSize = (value: string | number) => {
+    if (typeof value === "number") return value.toString();
+    if (value.trim() === "") return "";
+    else return value.replace("px", "").replace("%", "");
+  };
+
+  useEffect(() => {
+    setWidth(coverImageSize(imageNode.width ?? ""));
+    setWidthSuffix(imageNode.width?.toString().includes("%") ? "%" : "px");
+    setSrc(imageNode.src);
+    setAltText(imageNode.altText);
+  }, [imageNode]);
+
+  return (
+    <Modal title={"编辑图片"} closeOnClickOutside={false} onClose={onClose}>
+      <div className="editimage-dialog-body">
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <TextInput
+            label="宽度"
+            type="number"
+            value={width}
+            suffix={widthSuffix}
+            onChange={(v) => setWidth(v)}
+            disabled={widthSuffix === "%"}
+          />
+          <CheckInput
+            label="铺满屏幕"
+            value={widthSuffix === "%"}
+            onChange={(val) => {
+              if (val) {
+                setWidthSuffix("%");
+                setWidth("100");
+              } else {
+                setWidthSuffix("px");
+              }
+            }}
+          />
+        </div>
+        <TextInput
+          type="url"
+          value={src}
+          label="图片地址"
+          placeholder="https://"
+          onChange={(v) => setSrc(v)}
+        />
+        <TextInput
+          label="图片描述"
+          value={altText}
+          placeholder="alt text"
+          onChange={(v) => setAltText(v)}
+        />
+      </div>
+      <DialogActions>
+        <button
+          className="insertimage-dialog-button"
+          disabled={width.trim() === "" || src.trim() === ""}
+          onClick={() => {
+            onSave({
+              altText,
+              src,
+              width: widthSuffix === "%" ? "100%" : Number(width),
+            });
+          }}
+        >
+          确定
+        </button>
+      </DialogActions>
+    </Modal>
   );
 };
 
 interface ImageComponentProps {
   altText: string;
-  height: "inherit" | number;
-  maxWidth: number;
+  height: string | number;
+  maxWidth?: number;
   nodeKey: NodeKey;
   resizable: boolean;
   src: string;
-  width: "inherit" | number;
+  width: string | number;
 }
 
 const ImageComponent: React.FC<ImageComponentProps> = (props) => {
@@ -123,6 +225,8 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
   const activeEditorRef = useRef<LexicalEditor | null>(null);
   const [isLoadError, setIsLoadError] = useState<boolean>(false);
   const isEditable = useLexicalEditable();
+
+  const [imageNode, setImageNode] = useState<SerializedImageNode>();
 
   const $onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -165,6 +269,7 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
 
   const onRightClick = useCallback(
     (event: MouseEvent): void => {
+      // event.preventDefault();
       editor.getEditorState().read(() => {
         const latestSelection = $getSelection();
         const domElement = event.target as HTMLElement;
@@ -225,6 +330,11 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
+        DELETE_IMAGE_COMMAND,
+        $onDelete,
+        COMMAND_PRIORITY_LOW
+      ),
+      editor.registerCommand(
         KEY_BACKSPACE_COMMAND,
         $onDelete,
         COMMAND_PRIORITY_LOW
@@ -251,8 +361,8 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
   ]);
 
   const onResizeEnd = (
-    nextWidth: "inherit" | number,
-    nextHeight: "inherit" | number
+    nextWidth: string | number,
+    nextHeight: string | number
   ) => {
     // Delay hiding the resize bars for click case
     setTimeout(() => {
@@ -271,6 +381,7 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
 
   const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
   const isFocused = (isSelected || isResizing) && isEditable;
+
   return (
     <Suspense fallback={null}>
       <>
@@ -285,15 +396,55 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
                   : null
               }
               src={src}
-              altText={altText}
-              imageRef={imageRef}
               width={width}
               height={height}
+              altText={altText}
+              imageRef={imageRef}
               maxWidth={maxWidth}
               onError={() => setIsLoadError(true)}
             />
           )}
         </div>
+        {$isNodeSelection(selection) && isFocused && (
+          <>
+            <div
+              className="lexicaltheme__image__edit"
+              onClick={(ev) => {
+                ev.stopPropagation();
+                editor.read(() => {
+                  const node = $getNodeByKey(nodeKey);
+                  if (!node || !$isImageNode(node)) return;
+                  const [width, height, maxWidth] = node.getSize();
+                  const src = node.getSrc();
+                  const altText = node.getAltText();
+                  setImageNode({
+                    width,
+                    height,
+                    src,
+                    altText,
+                    maxWidth,
+                    version: 1,
+                    type: "image",
+                  });
+                });
+              }}
+            >
+              <IconImage />
+            </div>
+            <div
+              className="lexicaltheme__image__delete"
+              onClick={(ev) => {
+                ev.stopPropagation();
+                editor.dispatchCommand(
+                  DELETE_IMAGE_COMMAND,
+                  ev as unknown as MouseEvent
+                );
+              }}
+            >
+              <IconTrash />
+            </div>
+          </>
+        )}
         {resizable && $isNodeSelection(selection) && isFocused && (
           <ImageResizer
             editor={editor}
@@ -301,6 +452,22 @@ const ImageComponent: React.FC<ImageComponentProps> = (props) => {
             maxWidth={maxWidth}
             onResizeEnd={onResizeEnd}
             onResizeStart={onResizeStart}
+          />
+        )}
+        {imageNode && (
+          <EditImageDialog
+            imageNode={imageNode}
+            onSave={({ width, src, altText }) => {
+              editor.update(() => {
+                const node = $getNodeByKey(nodeKey);
+                if ($isImageNode(node)) {
+                  node.setWidthAndHeight(width, "auto");
+                  node.setSrcAndAltText(src, altText);
+                }
+                setImageNode(undefined);
+              });
+            }}
+            onClose={() => setImageNode(undefined)}
           />
         )}
       </>

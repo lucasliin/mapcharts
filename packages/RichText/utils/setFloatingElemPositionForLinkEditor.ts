@@ -11,8 +11,8 @@ export function setFloatingElemPositionForLinkEditor(
   const scrollerElem = anchorElem.parentElement;
 
   if (targetRect === null || !scrollerElem) {
-    floatingElem.style.opacity = '0';
-    floatingElem.style.transform = 'translate(-10000px, -10000px)';
+    floatingElem.style.opacity = "0";
+    floatingElem.style.transform = "translate(-10000px, -10000px)";
     return;
   }
 
@@ -20,20 +20,25 @@ export function setFloatingElemPositionForLinkEditor(
   const anchorElementRect = anchorElem.getBoundingClientRect();
   const editorScrollerRect = scrollerElem.getBoundingClientRect();
 
-  let top = targetRect.top - verticalGap;
+  let top = targetRect.top - floatingElemRect.height - verticalGap;
   let left = targetRect.left - horizontalOffset;
 
   if (top < editorScrollerRect.top) {
-    top += floatingElemRect.height + targetRect.height + verticalGap * 2;
+    floatingElem.style.borderRadius = "0 0 8px 8px";
+    floatingElem.style.boxShadow = "0px 5px 10px rgba(0, 0, 0, 0.2)";
+    top += floatingElemRect.height + targetRect.height + verticalGap * 2 - 8;
+  } else {
+    floatingElem.style.borderRadius = "8px 8px 0px 0px";
+    floatingElem.style.boxShadow = "0px -5px 10px rgba(0, 0, 0, 0.2)";
   }
 
   if (left + floatingElemRect.width > editorScrollerRect.right) {
     left = editorScrollerRect.right - floatingElemRect.width - horizontalOffset;
   }
 
-  top -= anchorElementRect.top;
+  top -= anchorElementRect.top - 4;
   left -= anchorElementRect.left;
 
-  floatingElem.style.opacity = '1';
+  floatingElem.style.opacity = "1";
   floatingElem.style.transform = `translate(${left}px, ${top}px)`;
 }

@@ -6,7 +6,6 @@ const SvgListUl = (props: SVGProps<SVGSVGElement>) => (
     width={16}
     height={16}
     fill="currentColor"
-    className="list-ul_svg__bi list-ul_svg__bi-list-ul"
     {...props}
   >
     <path

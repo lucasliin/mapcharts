@@ -11,18 +11,18 @@ import {
   type ElementFormatType,
   type LexicalEditor,
   type NodeKey,
-} from 'lexical';
-import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLexicalEditable } from '@lexical/react/useLexicalEditable';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { mergeRegister } from '@lexical/utils';
-import clsx from 'clsx';
+} from "lexical";
+import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister } from "@lexical/utils";
+import clsx from "clsx";
 
-import { RIGHT_CLICK_IMAGE_COMMAND } from '../ImageNode/ImageComponent';
-import ImageResizer from '../../components/ImageResizer';
+import { RIGHT_CLICK_IMAGE_COMMAND } from "../ImageNode/ImageComponent";
+import ImageResizer from "../../components/ImageResizer";
 
-import { $isYouTubeNode } from '.';
+import { $isYouTubeNode } from ".";
 
 type YouTubeComponentProps = Readonly<{
   className: Readonly<{
@@ -155,16 +155,20 @@ const YouTubeComponent: React.FC<YouTubeComponentProps> = (props) => {
   };
   return (
     <div
-      className={clsx('relative', className.base, isFocused && className.focus)}
-      style={{ width: isResized.current ? 'min-content' : '100%' }}
+      className={clsx("relative", className.base, isFocused && className.focus)}
+      style={{ width: isResized.current ? "min-content" : "100%" }}
     >
       <div ref={iframeRef}>
         <iframe
           title="YouTube video"
           allowFullScreen={true}
-          className="w-full h-auto"
-          style={{ aspectRatio: '16/9', pointerEvents: 'none' }}
           src={`https://www.youtube-nocookie.com/embed/${videoID}`}
+          style={{
+            aspectRatio: "16/9",
+            pointerEvents: "none",
+            width: "100%",
+            height: "auto",
+          }}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         />
       </div>
@@ -175,7 +179,7 @@ const YouTubeComponent: React.FC<YouTubeComponentProps> = (props) => {
           resizeDirections={{ x: true, y: false }}
           onResizeStart={onResizeStart}
           onResizeEnd={(width) => {
-            if (typeof width === 'number') onResizeEnd(width);
+            if (typeof width === "number") onResizeEnd(width);
           }}
         />
       )}

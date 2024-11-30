@@ -17,7 +17,7 @@ interface ImageResizerProps {
   editor: LexicalEditor;
   imageRef: { current: null | HTMLElement };
   maxWidth?: number;
-  onResizeEnd: (width: "inherit" | number, height: "inherit" | number) => void;
+  onResizeEnd: (width: string | number, height: string | number) => void;
   onResizeStart: () => void;
   resizeDirections?: { x: boolean; y: boolean };
 }
@@ -37,8 +37,8 @@ const ImageResizer: React.FC<ImageResizerProps> = (props) => {
     value: "default",
   });
   const positioningRef = useRef<{
-    currentHeight: "inherit" | number;
-    currentWidth: "inherit" | number;
+    currentHeight: string | number;
+    currentWidth: string | number;
     direction: number;
     isResizing: boolean;
     ratio: number;

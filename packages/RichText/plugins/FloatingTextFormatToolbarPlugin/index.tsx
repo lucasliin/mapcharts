@@ -12,7 +12,7 @@ import {
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { getSelectedNode } from "../../utils/getSelectedNode";
@@ -41,7 +41,6 @@ interface TextFormatFloatingToolbarProps {
   isSubscript: boolean;
   isSuperscript: boolean;
   isUnderline: boolean;
-  setIsLinkEditMode: Dispatch<boolean>;
 }
 
 const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
@@ -58,19 +57,16 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
     isStrikethrough,
     isSubscript,
     isSuperscript,
-    setIsLinkEditMode,
   } = props;
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
 
   const insertLink = useCallback(() => {
     if (!isLink) {
-      setIsLinkEditMode(true);
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
     } else {
-      setIsLinkEditMode(false);
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
-  }, [editor, isLink, setIsLinkEditMode]);
+  }, [editor, isLink]);
 
   function mouseMoveListener(e: MouseEvent) {
     if (
@@ -115,7 +111,13 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
     const popupCharStylesEditorElem = popupCharStylesEditorRef.current;
     const nativeSelection = window.getSelection();
 
-    if (popupCharStylesEditorElem === null || isLink) {
+    if (popupCharStylesEditorElem === null) {
+      return;
+    }
+
+    if (isLink) {
+      popupCharStylesEditorElem.style.transform =
+        "translate(-10000px, -10000px)";
       return;
     }
 
@@ -251,8 +253,7 @@ const TextFormatFloatingToolbar: React.FC<TextFormatFloatingToolbarProps> = (
 
 function useFloatingTextFormatToolbar(
   editor: LexicalEditor,
-  anchorElem: HTMLElement,
-  setIsLinkEditMode: Dispatch<boolean>
+  anchorElem: HTMLElement
 ): JSX.Element | null {
   const [isText, setIsText] = useState(false);
   const [isLink, setIsLink] = useState(false);
@@ -349,7 +350,6 @@ function useFloatingTextFormatToolbar(
       isSuperscript={isSuperscript}
       isUnderline={isUnderline}
       isCode={isCode}
-      setIsLinkEditMode={setIsLinkEditMode}
     />,
     anchorElem
   );
@@ -357,11 +357,9 @@ function useFloatingTextFormatToolbar(
 
 export default function FloatingTextFormatToolbarPlugin({
   anchorElem = document.body,
-  setIsLinkEditMode,
 }: {
   anchorElem?: HTMLElement;
-  setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  return useFloatingTextFormatToolbar(editor, anchorElem, setIsLinkEditMode);
+  return useFloatingTextFormatToolbar(editor, anchorElem);
 }

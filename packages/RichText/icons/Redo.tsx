@@ -6,7 +6,6 @@ const SvgRedo = (props: SVGProps<SVGSVGElement>) => (
     width={16}
     height={16}
     fill="currentColor"
-    className="redo_svg__bi redo_svg__bi-arrow-clockwise"
     {...props}
   >
     <path

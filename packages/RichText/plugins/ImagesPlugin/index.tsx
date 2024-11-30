@@ -26,10 +26,10 @@ import {
   ImageNode,
   ImagePayload,
 } from "../../nodes/ImageNode";
-import Button from "../../components/Button";
 import FileInput from "../../components/FileInput";
 import TextInput from "../../components/TextInput";
-import { DialogActions, DialogButtonsList } from "../../components/Dialog";
+import { DialogActions } from "../../components/Dialog";
+import { RIGHT_CLICK_IMAGE_COMMAND } from "../../nodes/ImageNode/ImageComponent";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -65,14 +65,16 @@ export const InsertImageUriDialogBody: React.FC<InsertImageBodyProps> = ({
           label="图片描述"
           value={altText}
           onChange={setAltText}
-          placeholder="Random unsplash image"
+          placeholder="请输入图片描述(alt)"
         />
       </div>
       <DialogActions>
         <button
           disabled={isDisabled}
           className="insertimage-dialog-button"
-          onClick={() => onClick({ altText, src })}
+          onClick={() => {
+            onClick({ altText, src, width: "100%", height: "auto" });
+          }}
         >
           确定
         </button>
@@ -126,11 +128,13 @@ export const InsertImageUploadedDialogBody: React.FC<InsertImageBodyProps> = ({
   );
 };
 
-export const InsertImageDialog: React.FC<{
+interface InsertImageDialogProps {
   activeEditor: LexicalEditor;
   onClose: () => void;
-}> = ({ activeEditor, onClose }) => {
-  const [mode, setMode] = useState<null | "url" | "file">(null);
+}
+
+export const InsertImageDialog: React.FC<InsertImageDialogProps> = (props) => {
+  const { activeEditor, onClose } = props;
   const hasModifier = useRef(false);
 
   useEffect(() => {
@@ -151,16 +155,7 @@ export const InsertImageDialog: React.FC<{
 
   return (
     <div>
-      {!mode && (
-        <div style={{ padding: "20px" }}>
-          <DialogButtonsList>
-            <Button onClick={() => setMode("url")}>通过 URL 上传</Button>
-            {/* <Button onClick={() => setMode("file")}>选择文件</Button> */}
-          </DialogButtonsList>
-        </div>
-      )}
-      {mode === "url" && <InsertImageUriDialogBody onClick={onClick} />}
-      {mode === "file" && <InsertImageUploadedDialogBody onClick={onClick} />}
+      <InsertImageUriDialogBody onClick={onClick} />
     </div>
   );
 };
@@ -191,6 +186,13 @@ export default function ImagesPlugin({
         },
         COMMAND_PRIORITY_EDITOR
       ),
+      // editor.registerCommand(
+      //   RIGHT_CLICK_IMAGE_COMMAND,
+      //   (event) => {
+      //     event.preventDefault();
+      //   },
+      //   COMMAND_PRIORITY_HIGH
+      // ),
       editor.registerCommand<DragEvent>(
         DRAGSTART_COMMAND,
         (event) => {
@@ -251,6 +253,8 @@ function $onDragStart(event: DragEvent): boolean {
 
   return true;
 }
+
+function $onRightClickImage() {}
 
 function $onDragover(event: DragEvent): boolean {
   const node = $getImageNodeInSelection();

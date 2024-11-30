@@ -43,9 +43,9 @@ import MaxLengthPlugin from "./plugins/MaxLengthPlugin";
 import { useDebounceEffect } from "ahooks";
 import TableHoverActionsPlugin from "./plugins/TableHoverActionsPlugin";
 import TableOfContentsPlugin from "./plugins/TableOfContentsPlugin";
-import TreeViewPlugin from "./plugins/TreeViewPlugin";
+// import DraggableBlockPlugin from "./plugins/DraggableBlockPlugin";
 
-export interface LexicalRichTextEditorProps {
+export interface LnkstoneEditorProps {
   id?: string;
   disabled?: boolean;
   placeholder?: string;
@@ -55,7 +55,7 @@ export interface LexicalRichTextEditorProps {
   status?: "error" | "success" | "warning" | "info" | "default";
 }
 
-const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
+const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
   const {
     id,
     max,
@@ -128,8 +128,6 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
     theme: theme,
   };
 
-  const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
-
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
 
@@ -174,10 +172,7 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
         className="richtext-editor"
         style={{ borderColor: borderColor.get(status) }}
       >
-        <ToolbarPlugin
-          setIsLinkEditMode={setIsLinkEditMode}
-          disabled={disabled}
-        />
+        <ToolbarPlugin disabled={disabled} />
         {max && (
           <MaxLengthPlugin max={max.len} preventInput={max.preventInput} />
         )}
@@ -189,20 +184,17 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
         <HashtagPlugin />
         {/* <EmojiPickerPlugin /> */}
 
-        <div className="richtext-editor-wrapper">
-          <RichTextPlugin
-            contentEditable={
-              <div className="richtext-editor-wrapper-box">
-                <div ref={onRef} className="ref">
-                  <LexicalContentEditable
-                    placeholder={placeholder ?? "请输入"}
-                  />
-                </div>
+        <RichTextPlugin
+          contentEditable={
+            <div className="editor-scroller">
+              <div ref={onRef} className="editor">
+                <LexicalContentEditable placeholder={placeholder ?? "请输入"} />
               </div>
-            }
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          {/* {isCollab ? (
+            </div>
+          }
+          ErrorBoundary={LexicalErrorBoundary}
+        />
+        {/* {isCollab ? (
               <CollaborationPlugin
                 id="main"
                 providerFactory={createWebsocketProvider}
@@ -210,56 +202,49 @@ const LexicalRichTextEditor: React.FC<LexicalRichTextEditorProps> = (props) => {
               />
             ) : (
             )} */}
-          <ImagesPlugin />
-          <HistoryPlugin externalHistoryState={historyState} />
+        <ImagesPlugin />
+        <HistoryPlugin externalHistoryState={historyState} />
 
-          <ListPlugin />
-          <CheckListPlugin />
-          <TablePlugin
-            hasCellMerge={tableCellMerge}
-            hasCellBackgroundColor={tableCellBackgroundColor}
-          />
-          <TableCellResizerPlugin />
-          <ClickableLinkPlugin />
-          <HorizontalRulePlugin />
+        <ListPlugin />
+        <CheckListPlugin />
+        <TablePlugin
+          hasCellMerge={tableCellMerge}
+          hasCellBackgroundColor={tableCellBackgroundColor}
+        />
+        <TableCellResizerPlugin />
+        <ClickableLinkPlugin />
+        <HorizontalRulePlugin />
 
-          <PageBreakPlugin />
-          <LinkPlugin />
-          <YouTubePlugin />
+        <PageBreakPlugin />
+        <LinkPlugin />
+        <YouTubePlugin />
 
-          {floatingAnchorElem && !isSmallWidthViewport && (
-            <>
-              <FloatingLinkEditorPlugin
-                anchorElem={floatingAnchorElem}
-                isLinkEditMode={isLinkEditMode}
-                setIsLinkEditMode={setIsLinkEditMode}
-              />
-              <FloatingTextFormatToolbarPlugin
-                anchorElem={floatingAnchorElem}
-                setIsLinkEditMode={setIsLinkEditMode}
-              />
-              <TableActionMenuPlugin
-                anchorElem={floatingAnchorElem}
-                cellMerge={true}
-              />
-              <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
-            </>
-          )}
-          <SerializationPlugin onChange={(value) => setRichTextValue(value)} />
-          {(isCharLimit || isCharLimitUtf8) && (
-            <CharacterLimitPlugin
-              charset={isCharLimit ? "UTF-16" : "UTF-8"}
-              maxLength={5}
+        {floatingAnchorElem && !isSmallWidthViewport && (
+          <>
+            {/* <DraggableBlockPlugin anchorElem={floatingAnchorElem} /> */}
+            <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+            <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+            <TableActionMenuPlugin
+              anchorElem={floatingAnchorElem}
+              cellMerge={true}
             />
-          )}
+            <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
+          </>
+        )}
+        <SerializationPlugin onChange={(value) => setRichTextValue(value)} />
+        {(isCharLimit || isCharLimitUtf8) && (
+          <CharacterLimitPlugin
+            charset={isCharLimit ? "UTF-16" : "UTF-8"}
+            maxLength={5}
+          />
+        )}
 
-          {/* <TreeViewPlugin /> */}
+        {/* <TreeViewPlugin /> */}
 
-          <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
-        </div>
+        <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
       </div>
     </LexicalComposer>
   );
 };
 
-export default LexicalRichTextEditor;
+export default LnkstoneEditor;

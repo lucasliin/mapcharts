@@ -436,7 +436,7 @@ const MapChart: React.FC<MapChartProps> = (props) => {
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                fill="currentcolor"
+                fill="currentColor"
                 d="m29.29,14.89q0,7.87 -14.3,28.94q-14.29,-21.07 -14.29,-28.94c0,-7.88 6.4,-14.26 14.29,-14.26c7.9,0 14.3,6.38 14.3,14.26z"
               />
               <ellipse

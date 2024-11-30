@@ -26,28 +26,13 @@ import { createPortal } from "react-dom";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import { setFloatingElemPositionForLinkEditor } from "../../utils/setFloatingElemPositionForLinkEditor";
 import { sanitizeUrl } from "../../utils/url";
-import {
-  IconClose,
-  IconPencilFill,
-  IconSuccessAlt,
-  IconTrash,
-} from "../../icons";
 
 const FloatingLinkEditor: React.FC<{
   editor: LexicalEditor;
   isLink: boolean;
   setIsLink: Dispatch<boolean>;
   anchorElem: HTMLElement;
-  isLinkEditMode: boolean;
-  setIsLinkEditMode: Dispatch<boolean>;
-}> = ({
-  editor,
-  isLink,
-  setIsLink,
-  anchorElem,
-  isLinkEditMode,
-  setIsLinkEditMode,
-}) => {
+}> = ({ editor, isLink, setIsLink, anchorElem }) => {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [linkUrl, setLinkUrl] = useState("");
@@ -73,9 +58,7 @@ const FloatingLinkEditor: React.FC<{
         setLinkUrl("");
         setTarget("");
       }
-      if (isLinkEditMode) {
-        setEditedLinkUrl(linkUrl);
-      }
+      setEditedLinkUrl(linkUrl);
     }
     const editorElem = editorRef.current;
     const nativeSelection = window.getSelection();
@@ -95,7 +78,7 @@ const FloatingLinkEditor: React.FC<{
       const domRect: DOMRect | undefined =
         nativeSelection.focusNode?.parentElement?.getBoundingClientRect();
       if (domRect) {
-        domRect.y += 40;
+        // domRect.y += 40;
         setFloatingElemPositionForLinkEditor(domRect, editorElem, anchorElem);
       }
       setLastSelection(selection);
@@ -104,12 +87,11 @@ const FloatingLinkEditor: React.FC<{
         setFloatingElemPositionForLinkEditor(null, editorElem, anchorElem);
       }
       setLastSelection(null);
-      setIsLinkEditMode(false);
       setLinkUrl("");
     }
 
     return true;
-  }, [anchorElem, editor, setIsLinkEditMode, isLinkEditMode, linkUrl]);
+  }, [anchorElem, editor, linkUrl]);
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement;
@@ -171,12 +153,6 @@ const FloatingLinkEditor: React.FC<{
     });
   }, [editor, $updateLinkEditor]);
 
-  useEffect(() => {
-    if (isLinkEditMode && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isLinkEditMode, isLink]);
-
   const monitorInputInteraction = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
@@ -185,7 +161,6 @@ const FloatingLinkEditor: React.FC<{
       handleLinkSubmission();
     } else if (event.key === "Escape") {
       event.preventDefault();
-      setIsLinkEditMode(false);
     }
   };
 
@@ -211,14 +186,12 @@ const FloatingLinkEditor: React.FC<{
           }
         });
       }
-      setEditedLinkUrl("https://");
-      setIsLinkEditMode(false);
     }
   };
 
   return (
     <div ref={editorRef} className="lexicaltheme__link-editor">
-      {!isLink ? null : isLinkEditMode ? (
+      {!isLink ? null : (
         <div className="lexicaltheme__link-editor-box">
           <div className="link-input-box">
             <input
@@ -228,31 +201,16 @@ const FloatingLinkEditor: React.FC<{
               onKeyDown={(event) => monitorInputInteraction(event)}
               onChange={(event) => setEditedLinkUrl(event.target.value)}
             />
-            <div className="link-input-actions">
-              <div
-                tabIndex={0}
-                role="button"
-                className="link-confirm"
-                onClick={handleLinkSubmission}
-                onMouseDown={(event) => event.preventDefault()}
-              >
-                <IconSuccessAlt width={16} height={16} />
-              </div>
-              <div
-                tabIndex={0}
-                role="button"
-                className="link-cancel"
-                onClick={() => setIsLinkEditMode(false)}
-                onMouseDown={(event) => event.preventDefault()}
-              >
-                <IconClose width={16} height={16} />
-              </div>
-            </div>
+            <button
+              role="button"
+              className="link-confirm"
+              onClick={handleLinkSubmission}
+              onMouseDown={(event) => event.preventDefault()}
+            >
+              保存
+            </button>
           </div>
-          <div
-            className="lexicaltheme__checkboxInput"
-            style={{ padding: "0px 10px" }}
-          >
+          <div className="lexicaltheme__checkboxInput">
             <input
               type="checkbox"
               id="link-new-window"
@@ -266,42 +224,6 @@ const FloatingLinkEditor: React.FC<{
             </label>
           </div>
         </div>
-      ) : (
-        <div className="link-view">
-          <a
-            target="_blank"
-            className="hover:underline"
-            href={sanitizeUrl(linkUrl)}
-            rel="noopener noreferrer"
-          >
-            {linkUrl}
-          </a>
-          <div className="link-input-actions">
-            <div
-              role="button"
-              tabIndex={0}
-              className="link-edit"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                setEditedLinkUrl(linkUrl);
-                setIsLinkEditMode(true);
-              }}
-            >
-              <IconPencilFill width={16} height={16} />
-            </div>
-            <div
-              role="button"
-              tabIndex={0}
-              className="link-trash"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-              }}
-            >
-              <IconTrash width={16} height={16} />
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
@@ -309,9 +231,7 @@ const FloatingLinkEditor: React.FC<{
 
 function useFloatingLinkEditorToolbar(
   editor: LexicalEditor,
-  anchorElem: HTMLElement,
-  isLinkEditMode: boolean,
-  setIsLinkEditMode: Dispatch<boolean>
+  anchorElem: HTMLElement
 ): JSX.Element | null {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLink, setIsLink] = useState(false);
@@ -392,8 +312,6 @@ function useFloatingLinkEditorToolbar(
       isLink={isLink}
       anchorElem={anchorElem}
       setIsLink={setIsLink}
-      isLinkEditMode={isLinkEditMode}
-      setIsLinkEditMode={setIsLinkEditMode}
     />,
     anchorElem
   );
@@ -401,18 +319,9 @@ function useFloatingLinkEditorToolbar(
 
 export default function FloatingLinkEditorPlugin({
   anchorElem = document.body,
-  isLinkEditMode,
-  setIsLinkEditMode,
 }: {
   anchorElem?: HTMLElement;
-  isLinkEditMode: boolean;
-  setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  return useFloatingLinkEditorToolbar(
-    editor,
-    anchorElem,
-    isLinkEditMode,
-    setIsLinkEditMode
-  );
+  return useFloatingLinkEditorToolbar(editor, anchorElem);
 }

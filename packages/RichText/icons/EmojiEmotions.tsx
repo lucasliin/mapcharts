@@ -1,14 +1,12 @@
-import * as React from 'react';
-import type { SVGProps } from 'react';
+import * as React from "react";
+import type { SVGProps } from "react";
 const SvgEmojiEmotions = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    focusable="false"
-    aria-hidden="true"
     viewBox="0 0 24 24"
     width={22}
     height={22}
-    fill="currentcolor"
+    fill="currentColor"
     {...props}
   >
     <circle cx="15.5" cy="9.5" r="1.5"></circle>

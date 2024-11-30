@@ -1,14 +1,14 @@
 {
-  "name": "lexicalrichtexteditor",
+  "name": "lnkstone-editor",
   "version": "0.0.2",
   "type": "module",
-  "main": "./dist/lexicalrichtexteditor.umd.cjs",
-  "module": "./dist/lexicalrichtexteditor.js",
+  "main": "./dist/lnkstone-editor.umd.cjs",
+  "module": "./dist/lnkstone-editor.js",
   "typings": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/lexicalrichtexteditor.js",
-      "require": "./dist/lexicalrichtexteditor.umd.js"
+      "import": "./dist/lnkstone-editor.js",
+      "require": "./dist/lnkstone-editor.umd.js"
     }
   },
   "scripts": {

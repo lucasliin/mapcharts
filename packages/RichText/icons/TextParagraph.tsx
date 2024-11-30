@@ -6,7 +6,6 @@ const SvgTextParagraph = (props: SVGProps<SVGSVGElement>) => (
     width={16}
     height={16}
     fill="currentColor"
-    className="text-paragraph_svg__bi text-paragraph_svg__bi-text-paragraph"
     {...props}
   >
     <path

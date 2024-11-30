@@ -222,12 +222,12 @@ const DropDown: React.FC<DropDownProps> = (props) => {
         ref={buttonRef}
         disabled={disabled}
         onClick={() => setShowDropDown(!showDropDown)}
-        style={{ backgroundColor: showDropDown ? "#f3f4f6" : "white" }}
-        className={
+        className={clsx(
           type === "button"
             ? "lexicaltheme__dropdown__activor_sm"
-            : "lexicaltheme__dropdown__activor"
-        }
+            : "lexicaltheme__dropdown__activor",
+          showDropDown ? "lexicaltheme__dropdown__activor_active" : ""
+        )}
       >
         {buttonLabel && typeof buttonLabel === "string" ? (
           <span>{buttonLabel}</span>

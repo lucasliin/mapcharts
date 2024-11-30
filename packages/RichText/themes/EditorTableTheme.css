@@ -21,7 +21,7 @@
 }
 
 .lexicaltheme__tableCell {
-  border: 1px solid #bbb;
+  border: 1px solid #bbb !important;
   width: 75px;
   vertical-align: top;
   text-align: start;

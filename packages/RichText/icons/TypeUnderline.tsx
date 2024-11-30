@@ -1,13 +1,11 @@
-import * as React from 'react';
-import type { SVGProps } from 'react';
+import * as React from "react";
+import type { SVGProps } from "react";
 const SvgTypeUnderline = (props: SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={20}
     height={20}
     fill="currentColor"
-    focusable="false"
-    aria-hidden="true"
     viewBox="0 0 24 24"
     {...props}
   >

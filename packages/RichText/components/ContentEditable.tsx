@@ -11,7 +11,7 @@ const LexicalContentEditable: React.FC<LexicalContentEditableProps> = ({
   return (
     <ContentEditable
       aria-placeholder={placeholder}
-      className="editor-cell"
+      className="ContentEditable__root"
       placeholder={<div className="editor-cell-placeholder">{placeholder}</div>}
     />
   );

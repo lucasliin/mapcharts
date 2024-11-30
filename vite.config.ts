@@ -18,8 +18,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "packages/index.ts"),
-      name: "RichText",
-      fileName: (format) => `richtext.${format}.js`,
+      name: "LnkstoneEditor",
+      fileName: (format) => `lnkstone-editor.${format}.js`,
       formats: ["umd"],
     },
     rollupOptions: {

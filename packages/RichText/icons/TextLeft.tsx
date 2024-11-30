@@ -6,7 +6,6 @@ const SvgTextLeft = (props: SVGProps<SVGSVGElement>) => (
     width={16}
     height={16}
     fill="currentColor"
-    className="text-left_svg__bi text-left_svg__bi-text-left"
     {...props}
   >
     <path

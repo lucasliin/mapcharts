@@ -6,7 +6,6 @@ const SvgTextCenter = (props: SVGProps<SVGSVGElement>) => (
     width={16}
     height={16}
     fill="currentColor"
-    className="text-center_svg__bi text-center_svg__bi-text-center"
     {...props}
   >
     <path
