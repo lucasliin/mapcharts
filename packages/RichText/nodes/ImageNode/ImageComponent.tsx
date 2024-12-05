@@ -186,6 +186,7 @@ const EditImageDialog: React.FC<EditImageDialogProps> = (props) => {
       </div>
       <DialogActions>
         <button
+          type="button"
           className="insertimage-dialog-button"
           disabled={width.trim() === "" || src.trim() === ""}
           onClick={() => {

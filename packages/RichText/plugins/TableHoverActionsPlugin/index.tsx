@@ -216,6 +216,7 @@ function TableHoverActionsContainer({
     <>
       {isShownRow && (
         <button
+          type="button"
           className={"lexicaltheme__tableAddRows"}
           style={{ ...position }}
           onClick={() => insertAction(true)}
@@ -225,6 +226,7 @@ function TableHoverActionsContainer({
       )}
       {isShownColumn && (
         <button
+          type="button"
           className={"lexicaltheme__tableAddColumns"}
           style={{ ...position }}
           onClick={() => insertAction(false)}

@@ -63,6 +63,7 @@ export const InsetYouTubeDialog: React.FC<{
       </div>
       <DialogActions>
         <button
+          type="button"
           onClick={() => onClick()}
           disabled={url.trim() === ""}
           className="lexicaltheme__dialogfotter__action"

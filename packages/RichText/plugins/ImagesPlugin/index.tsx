@@ -70,6 +70,7 @@ export const InsertImageUriDialogBody: React.FC<InsertImageBodyProps> = ({
       </div>
       <DialogActions>
         <button
+          role="button"
           disabled={isDisabled}
           className="insertimage-dialog-button"
           onClick={() => {
@@ -117,6 +118,7 @@ export const InsertImageUploadedDialogBody: React.FC<InsertImageBodyProps> = ({
       </div>
       <DialogActions>
         <button
+          role="button"
           disabled={isDisabled}
           onClick={() => onClick({ altText, src })}
           className="insertimage-dialog-button"

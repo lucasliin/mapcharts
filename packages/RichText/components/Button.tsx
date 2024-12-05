@@ -13,6 +13,7 @@ const Button: React.FC<ButtonProps> = (props) => {
   const { children, className, onClick, disabled, title } = props;
   return (
     <button
+      type="button"
       disabled={disabled}
       className={clsx("lexicaltheme__button", className)}
       onClick={onClick}

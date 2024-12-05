@@ -262,11 +262,11 @@
   border-style: solid;
   position: absolute;
   display: block;
-  top: 6px;
-  width: 3px;
-  left: 7px;
+  top: 5px;
+  width: 5px;
+  left: 6px;
   right: 7px;
-  height: 6px;
+  height: 9px;
   transform: rotate(45deg);
   border-width: 0 2px 2px 0;
 }
