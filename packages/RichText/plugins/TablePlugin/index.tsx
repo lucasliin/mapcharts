@@ -77,7 +77,7 @@ export function InsertTableDialog({
   const [rows, setRows] = useState("5");
   const [columns, setColumns] = useState("5");
   const [rowsHeader, setRowsHeader] = useState(true);
-  const [columnsHeader, setColumnsHeader] = useState(true);
+  const [columnsHeader, setColumnsHeader] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
