@@ -1307,58 +1307,18 @@ input[type="checkbox"]:checked::before {
   z-index: 10;
   opacity: 0;
   padding: 2px;
-  background-color: #fff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   transition: opacity 0.5s;
   will-change: transform;
 }
 
-.lexicaltheme__link-editor {
-  display: flex;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  max-width: 400px;
-  width: 100%;
-  opacity: 0;
-  background-color: #fff;
-  box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px 8px 0px 0px;
-  transition: opacity 0.5s;
-  will-change: transform;
+.lexicaltheme__link-editor2 .edit-icon {
+  color: #333333;
 }
 
-.lexicaltheme__link-editor .button {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  padding: 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin: 0 2px;
-}
-
-.lexicaltheme__link-editor .button.hovered {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  background-color: #eee;
-}
-
-.lexicaltheme__link-editor .button i,
-.actions i {
-  background-size: contain;
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-  vertical-align: -0.25em;
-}
-
-.lexicaltheme__link-editor .button.active,
-.toolbar .button.active {
-  background-color: rgb(223, 232, 250);
+.lexicaltheme__link-editor2 .edit-icon:hover {
+  color: var(--lexicaltheme-primary-color);
 }
 
 .lexicaltheme__link-editor .link-input {

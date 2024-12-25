@@ -306,6 +306,7 @@ const FloatingLinkEditor: React.FC<FloatingLinkEditorProps> = (props) => {
       ref={editorRef}
       onClick={() => setOpenModal(true)}
       className="lexicaltheme__link-editor2"
+      style={{ backgroundColor: isLink ? "white" : "transparent" }}
     >
       {openModal ? (
         <FloatingLinkEditorModal
@@ -319,7 +320,7 @@ const FloatingLinkEditor: React.FC<FloatingLinkEditorProps> = (props) => {
           value={{ target, url: editedLinkUrl, type: linkType }}
         />
       ) : null}
-      {!isLink ? null : <IconEdit />}
+      {!isLink ? null : <IconEdit className="edit-icon" />}
     </div>
   );
 };

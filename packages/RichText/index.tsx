@@ -17,7 +17,7 @@ import { CAN_USE_DOM } from "@lexical/utils";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import theme from "./themes/CommentEditorTheme";
 import { useSharedHistoryContext } from "./context/SharedHistoryContext";
-import { useSettings } from "./context/SettingsContext";
+import { SettingsContext, useSettings } from "./context/SettingsContext";
 import PlaygroundNodes from "./nodes/PlaygroundNodes";
 import PageBreakPlugin from "./plugins/PageDividerPlugin";
 import LexicalContentEditable from "./components/ContentEditable";
@@ -46,6 +46,7 @@ import TableHoverActionsPlugin from "./plugins/TableHoverActionsPlugin";
 import TableOfContentsPlugin from "./plugins/TableOfContentsPlugin";
 import DraggableBlockPlugin from "./plugins/DraggableBlockPlugin";
 import { ExtendedTextNode } from "./nodes/ExtendedTextNode";
+import { TableContext } from "./plugins/TablePlugin";
 
 export interface LnkstoneEditorProps {
   id?: string;
@@ -177,35 +178,39 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
   }, [richTextValue]);
 
   return (
-    <LexicalComposer initialConfig={initialConfig}>
-      <div
-        id={id}
-        className="richtext-editor"
-        style={{ borderColor: borderColor.get(status) }}
-      >
-        <ToolbarPlugin disabled={disabled} />
-        {max && (
-          <MaxLengthPlugin max={max.len} preventInput={max.preventInput} />
-        )}
-        {/* <AutoFocusPlugin /> */}
-        <ClearEditorPlugin />
+    <SettingsContext>
+      <LexicalComposer initialConfig={initialConfig}>
+        <TableContext>
+          <div
+            id={id}
+            className="richtext-editor"
+            style={{ borderColor: borderColor.get(status) }}
+          >
+            <ToolbarPlugin disabled={disabled} />
+            {max && (
+              <MaxLengthPlugin max={max.len} preventInput={max.preventInput} />
+            )}
+            {/* <AutoFocusPlugin /> */}
+            <ClearEditorPlugin />
 
-        <NewMentionsPlugin />
-        <EmojisPlugin />
-        <HashtagPlugin />
-        {/* <EmojiPickerPlugin /> */}
+            <NewMentionsPlugin />
+            <EmojisPlugin />
+            <HashtagPlugin />
+            {/* <EmojiPickerPlugin /> */}
 
-        <RichTextPlugin
-          contentEditable={
-            <div className="editor-scroller">
-              <div ref={onRef} className="editor">
-                <LexicalContentEditable placeholder={placeholder ?? "请输入"} />
-              </div>
-            </div>
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        {/* {isCollab ? (
+            <RichTextPlugin
+              contentEditable={
+                <div className="editor-scroller">
+                  <div ref={onRef} className="editor">
+                    <LexicalContentEditable
+                      placeholder={placeholder ?? "请输入"}
+                    />
+                  </div>
+                </div>
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            {/* {isCollab ? (
               <CollaborationPlugin
                 id="main"
                 providerFactory={createWebsocketProvider}
@@ -213,48 +218,54 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
               />
             ) : (
             )} */}
-        <ImagesPlugin />
-        <HistoryPlugin externalHistoryState={historyState} />
+            <ImagesPlugin />
+            <HistoryPlugin externalHistoryState={historyState} />
 
-        <ListPlugin />
-        <CheckListPlugin />
-        <TablePlugin
-          hasCellMerge={tableCellMerge}
-          hasCellBackgroundColor={tableCellBackgroundColor}
-        />
-        <TableCellResizerPlugin />
-        <ClickableLinkPlugin />
-        <HorizontalRulePlugin />
-
-        <PageBreakPlugin />
-        <LinkPlugin />
-        <YouTubePlugin />
-
-        {floatingAnchorElem && !isSmallWidthViewport && (
-          <>
-            <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-            <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-            <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
-            <TableActionMenuPlugin
-              anchorElem={floatingAnchorElem}
-              cellMerge={true}
+            <ListPlugin />
+            <CheckListPlugin />
+            <TablePlugin
+              hasCellMerge={tableCellMerge}
+              hasCellBackgroundColor={tableCellBackgroundColor}
             />
-            <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
-          </>
-        )}
-        <SerializationPlugin onChange={(value) => setRichTextValue(value)} />
-        {(isCharLimit || isCharLimitUtf8) && (
-          <CharacterLimitPlugin
-            charset={isCharLimit ? "UTF-16" : "UTF-8"}
-            maxLength={5}
-          />
-        )}
+            <TableCellResizerPlugin />
+            <ClickableLinkPlugin />
+            <HorizontalRulePlugin />
 
-        {/* <TreeViewPlugin /> */}
+            <PageBreakPlugin />
+            <LinkPlugin />
+            <YouTubePlugin />
 
-        <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
-      </div>
-    </LexicalComposer>
+            {floatingAnchorElem && !isSmallWidthViewport && (
+              <>
+                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+                <FloatingTextFormatToolbarPlugin
+                  anchorElem={floatingAnchorElem}
+                />
+                <TableActionMenuPlugin
+                  anchorElem={floatingAnchorElem}
+                  cellMerge={true}
+                />
+                <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
+              </>
+            )}
+            <SerializationPlugin
+              onChange={(value) => setRichTextValue(value)}
+            />
+            {(isCharLimit || isCharLimitUtf8) && (
+              <CharacterLimitPlugin
+                charset={isCharLimit ? "UTF-16" : "UTF-8"}
+                maxLength={5}
+              />
+            )}
+
+            {/* <TreeViewPlugin /> */}
+
+            <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
+          </div>
+        </TableContext>
+      </LexicalComposer>
+    </SettingsContext>
   );
 };
 
