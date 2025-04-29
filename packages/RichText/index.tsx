@@ -31,6 +31,7 @@ import LinkPlugin from "./plugins/LinkPlugin";
 import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextFormatToolbarPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
 import SerializationPlugin from "./plugins/SerializationPlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import {
   $createParagraphNode,
   $getRoot,
@@ -40,16 +41,20 @@ import {
   TextNode,
 } from "lexical";
 import { $generateNodesFromDOM } from "@lexical/html";
-import MaxLengthPlugin from "./plugins/MaxLengthPlugin";
 import { useDebounceEffect } from "ahooks";
 import TableHoverActionsPlugin from "./plugins/TableHoverActionsPlugin";
 import TableOfContentsPlugin from "./plugins/TableOfContentsPlugin";
 import DraggableBlockPlugin from "./plugins/DraggableBlockPlugin";
 import { ExtendedTextNode } from "./nodes/ExtendedTextNode";
 import { TableContext } from "./plugins/TablePlugin";
+import { $isLinkNode } from "@lexical/link";
+import MaxLengthPlugin from "./plugins/MaxLengthPlugin";
+import TabFocusPlugin from "./plugins/TabFocusPlugin";
+import TreeViewPlugin from "./plugins/TreeViewPlugin";
 
 export interface LnkstoneEditorProps {
   id?: string;
+  preview?: boolean;
   disabled?: boolean;
   placeholder?: string;
   defaultValue?: string;
@@ -61,7 +66,7 @@ export interface LnkstoneEditorProps {
 const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
   const {
     id,
-    max,
+    preview,
     disabled,
     onChange,
     placeholder,
@@ -103,15 +108,33 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
         "text/html"
       );
       const generatedNodes = $generateNodesFromDOM(params.editor, document);
-      const nodes = generatedNodes.map((node) => {
+
+      const nodes = [];
+      let temp = [];
+
+      for (let i = 0; i < generatedNodes.length; i++) {
+        const node = generatedNodes[i];
+        // console.log($is(node));
         if (!$isElementNode(node) && !$isDecoratorNode(node)) {
           const p = $createParagraphNode();
-          p.append(node);
-          return p;
+          if (temp.length > 0) {
+            p.append(...temp);
+            temp = [];
+          } else {
+            p.append(node);
+          }
+          nodes.push(p);
+        } else if ($isLinkNode(node)) {
+          temp.push(node);
+        } else {
+          nodes.push(node);
         }
-
-        return node;
-      });
+      }
+      if (temp.length > 0) {
+        const p = $createParagraphNode();
+        p.append(...temp);
+        nodes.push(p);
+      }
       root.append(...nodes);
     });
   }
@@ -187,9 +210,10 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
             style={{ borderColor: borderColor.get(status) }}
           >
             <ToolbarPlugin disabled={disabled} />
-            {max && (
+            {/* {max && (
               <MaxLengthPlugin max={max.len} preventInput={max.preventInput} />
-            )}
+            )} */}
+            {/* <MaxLengthPlugin maxLength={2} /> */}
             {/* <AutoFocusPlugin /> */}
             <ClearEditorPlugin />
 
@@ -226,10 +250,13 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
             <TablePlugin
               hasCellMerge={tableCellMerge}
               hasCellBackgroundColor={tableCellBackgroundColor}
+              hasHorizontalScroll
             />
             <TableCellResizerPlugin />
             <ClickableLinkPlugin />
             <HorizontalRulePlugin />
+            <TabFocusPlugin />
+            <TabIndentationPlugin maxIndent={7} />
 
             <PageBreakPlugin />
             <LinkPlugin />
@@ -252,14 +279,9 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
             <SerializationPlugin
               onChange={(value) => setRichTextValue(value)}
             />
-            {(isCharLimit || isCharLimitUtf8) && (
-              <CharacterLimitPlugin
-                charset={isCharLimit ? "UTF-16" : "UTF-8"}
-                maxLength={5}
-              />
-            )}
+            {/* <CharacterLimitPlugin charset="UTF-8" maxLength={30} /> */}
 
-            {/* <TreeViewPlugin /> */}
+            {preview ? <TreeViewPlugin /> : null}
 
             <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
           </div>

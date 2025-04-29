@@ -10,12 +10,12 @@ import {
 import { useEffect, useState } from "react";
 
 interface MaxLengthPluginProps {
-  max: number;
+  maxLength: number;
   preventInput?: boolean;
 }
 
 const MaxLengthPlugin: React.FC<MaxLengthPluginProps> = ({
-  max,
+  maxLength,
   preventInput,
 }) => {
   const [editor] = useLexicalComposerContext();
@@ -33,15 +33,18 @@ const MaxLengthPlugin: React.FC<MaxLengthPluginProps> = ({
       const prevTextContentSize = prevEditorState.read(() =>
         rootNode.getTextContentSize()
       );
-      const textContentSize = rootNode.getTextContentSize();
+      const textContentSize =
+        rootNode.getTextContentSize() -
+        (rootNode.getChildrenSize() > 1 ? rootNode.getChildrenSize() - 1 : 0);
       setTextContentSize(textContentSize);
+
       if (prevTextContentSize !== textContentSize && preventInput) {
-        const delCount = textContentSize - max;
+        const delCount = textContentSize - maxLength;
         const anchor = selection.anchor;
 
         if (delCount > 0) {
           if (
-            prevTextContentSize === max &&
+            prevTextContentSize === maxLength &&
             lastRestoredEditorState !== prevEditorState
           ) {
             lastRestoredEditorState = prevEditorState;
@@ -52,14 +55,14 @@ const MaxLengthPlugin: React.FC<MaxLengthPluginProps> = ({
         }
       }
     });
-  }, [editor, max, preventInput]);
+  }, [editor, maxLength, preventInput]);
 
   return (
     <div
       className="lexicaltheme__count"
-      style={{ color: textContentSize > max ? "red" : "#6b7280" }}
+      style={{ color: textContentSize > maxLength ? "red" : "#6b7280" }}
     >
-      {textContentSize + "/" + max}
+      {textContentSize + "/" + maxLength}
     </div>
   );
 };

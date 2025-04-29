@@ -10,6 +10,7 @@ import React, {
 import { createPortal } from "react-dom";
 
 import { IconArrowDropDown } from "../icons";
+import { useEventListener } from "ahooks";
 
 type DropDownContextType = {
   registerItem: (ref: React.RefObject<HTMLButtonElement>) => void;
@@ -193,6 +194,23 @@ const DropDown: React.FC<DropDownProps> = (props) => {
     }
   }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
 
+  useEventListener("resize", () => {
+    if (showDropDown) {
+      const button = buttonRef.current;
+      const dropDown = dropDownRef.current;
+      if (button !== null && dropDown !== null) {
+        const { left } = button.getBoundingClientRect();
+        const newPosition = Math.min(
+          left,
+          window.innerWidth - dropDown.offsetWidth - 20
+        );
+        if (newPosition !== dropDown.getBoundingClientRect().left) {
+          dropDown.style.left = `${newPosition}px`;
+        }
+      }
+    }
+  });
+
   useEffect(() => {
     const handleButtonPositionUpdate = () => {
       if (showDropDown) {
@@ -207,7 +225,6 @@ const DropDown: React.FC<DropDownProps> = (props) => {
         }
       }
     };
-
     document.addEventListener("scroll", handleButtonPositionUpdate);
 
     return () => {

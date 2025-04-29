@@ -40,7 +40,7 @@ const theme: EditorThemeClasses = {
     url: "lexicaltheme__tokenOperator",
     variable: "lexicaltheme__tokenVariable",
   },
-
+  tab: "lexicaltheme__tabNode",
   table: "lexicaltheme__table",
   tableCell: "lexicaltheme__tableCell",
   tableCellActionButton: "lexicaltheme__tableCellActionButton",
@@ -56,6 +56,7 @@ const theme: EditorThemeClasses = {
   tableRowStriping: "lexicaltheme__tableRowStriping",
   tableSelected: "lexicaltheme__tableSelected",
   tableSelection: "lexicaltheme__tableSelection",
+  tableScrollableWrapper: "lexicaltheme__tableScrollableWrapper",
 
   embedBlock: {
     base: "lexicaltheme__embedBlock",

@@ -204,9 +204,11 @@ const FloatingLinkEditor: React.FC<FloatingLinkEditorProps> = (props) => {
     ) {
       const domRect: DOMRect | undefined =
         nativeSelection.focusNode?.parentElement?.getBoundingClientRect();
-      if (domRect) {
+      if (domRect && isLink) {
         domRect.y += 40;
         setFloatingElemPositionForLinkEditor(domRect, editorElem, anchorElem);
+      } else {
+        setFloatingElemPositionForLinkEditor(null, editorElem, anchorElem);
       }
       setLastSelection(selection);
     } else if (!activeElement || activeElement.className !== "link-input") {
@@ -218,7 +220,7 @@ const FloatingLinkEditor: React.FC<FloatingLinkEditorProps> = (props) => {
     }
 
     return true;
-  }, [anchorElem, editor, linkUrl]);
+  }, [anchorElem, editor, isLink, linkUrl]);
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement;
@@ -260,7 +262,6 @@ const FloatingLinkEditor: React.FC<FloatingLinkEditorProps> = (props) => {
         KEY_ESCAPE_COMMAND,
         () => {
           if (!isLink) return false;
-
           setIsLink(false);
           return true;
         },
@@ -306,7 +307,10 @@ const FloatingLinkEditor: React.FC<FloatingLinkEditorProps> = (props) => {
       ref={editorRef}
       onClick={() => setOpenModal(true)}
       className="lexicaltheme__link-editor2"
-      style={{ backgroundColor: isLink ? "white" : "transparent" }}
+      style={{
+        backgroundColor: isLink ? "white" : "transparent",
+        opacity: isLink ? 1 : 0,
+      }}
     >
       {openModal ? (
         <FloatingLinkEditorModal
@@ -320,17 +324,15 @@ const FloatingLinkEditor: React.FC<FloatingLinkEditorProps> = (props) => {
           value={{ target, url: editedLinkUrl, type: linkType }}
         />
       ) : null}
-      {!isLink ? null : <IconEdit className="edit-icon" />}
+      <IconEdit className="edit-icon" />
     </div>
   );
 };
 
-const FloatingLinkEditorPlugin: React.FC<{ anchorElem?: HTMLElement }> = (
-  props
-) => {
-  const { anchorElem = document.body } = props;
-  const [editor] = useLexicalComposerContext();
-
+function useFloatingLinkEditorToolbar(
+  editor: LexicalEditor,
+  anchorElem: HTMLElement
+): JSX.Element | null {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLink, setIsLink] = useState(false);
 
@@ -401,19 +403,22 @@ const FloatingLinkEditorPlugin: React.FC<{ anchorElem?: HTMLElement }> = (
     );
   }, [editor]);
 
-  return (
-    <>
-      {createPortal(
-        <FloatingLinkEditor
-          editor={activeEditor}
-          isLink={isLink}
-          anchorElem={anchorElem}
-          setIsLink={setIsLink}
-        />,
-        anchorElem
-      )}
-    </>
+  return createPortal(
+    <FloatingLinkEditor
+      isLink={isLink}
+      editor={activeEditor}
+      setIsLink={setIsLink}
+      anchorElem={anchorElem}
+    />,
+    anchorElem
   );
-};
+}
 
-export default FloatingLinkEditorPlugin;
+export default function FloatingLinkEditorPlugin({
+  anchorElem = document.body,
+}: {
+  anchorElem?: HTMLElement;
+}): JSX.Element | null {
+  const [editor] = useLexicalComposerContext();
+  return useFloatingLinkEditorToolbar(editor, anchorElem);
+}

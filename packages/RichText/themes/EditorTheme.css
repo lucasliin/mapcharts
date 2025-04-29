@@ -246,28 +246,33 @@
   border-radius: 2px;
 }
 .lexicaltheme__listItemUnchecked:before {
-  border: 1px solid #999;
-  border-radius: 2px;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 4px;
 }
 .lexicaltheme__listItemChecked:before {
   border: 1px solid rgb(61, 135, 245);
-  border-radius: 2px;
+  border-radius: 4px;
   background-color: #3d87f5;
   background-repeat: no-repeat;
 }
+
 .lexicaltheme__listItemChecked:after {
   content: "";
   cursor: pointer;
-  border-color: #fff;
+  opacity: 1;
+  border-width: 2px;
+  border-color: white;
   border-style: solid;
+  border-top-width: 0px;
+  border-inline-start-width: 0px;
+  width: 6px;
+  height: 10px;
+  display: table;
+  top: 50%;
+  inset-inline-start: 6px;
   position: absolute;
-  display: block;
-  top: 5px;
-  width: 5px;
-  left: 6px;
-  right: 7px;
-  height: 9px;
-  transform: rotate(45deg);
+  box-sizing: border-box;
+  transform: translate(10%, -66.66%) rotate(45deg);
   border-width: 0 2px 2px 0;
 }
 .lexicaltheme__nestedListItem {
@@ -636,6 +641,7 @@ button.toolbarbutton {
   color: #374151;
   border-radius: 4px;
   background-color: transparent;
+  gap: 6px;
 }
 
 button.toolbarbutton:hover {
@@ -654,6 +660,11 @@ button.toolbarbutton:disabled:hover {
 .toolbarbutton-active {
   background-color: #0000000d !important;
   color: var(--lexicaltheme-primary-color) !important;
+}
+
+.toolbarbutton-horizontal {
+  width: 100%;
+  justify-content: left !important;
 }
 
 .insertimage-dialog {
@@ -814,6 +825,8 @@ button.toolbarbutton:disabled:hover {
 .lexicaltheme__toolbar {
   display: flex;
   align-items: center;
+  /* flex-wrap: nowrap; */
+  /* overflow: hidden; */
   flex-wrap: wrap;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -827,9 +840,19 @@ button.toolbarbutton:disabled:hover {
   height: 32px;
   margin: 0px 8px;
   width: 1px;
+  min-width: 1px;
   float: left;
   display: block;
   box-shadow: inset -1px 0 #0000001a;
+}
+
+.lexicaltheme__toolbar__divider_h {
+  height: 1px;
+  min-height: 1px;
+  margin: 8px 0px;
+  width: 100%;
+  display: block;
+  box-shadow: inset 0px -1px #0000001a;
 }
 
 .lexicaltheme__dialogbody {
@@ -1134,6 +1157,14 @@ button.toolbarbutton:disabled:hover {
 
 .lexicaltheme__dropdown__item_active {
   background-color: #eee;
+}
+
+.lexicaltheme__dropdown__more_box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0px 10px;
+  overflow-y: auto;
 }
 
 .lexicaltheme__dropdown__emoji_box {

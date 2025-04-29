@@ -16,6 +16,10 @@
   background-color: transparent;
 }
 
+.lexicaltheme__tableScrollableWrapper { 
+  overflow-x: auto;
+}
+
 .lexicaltheme__tableSelected {
   outline: 2px solid rgb(60, 132, 244);
 }
@@ -219,4 +223,45 @@
 
 .table-of-contents .heading3 {
   margin-left: 20px;
+}
+
+.lexicaltheme__tabNode {
+  position: relative;
+  text-decoration: none;
+}
+
+.lexicaltheme__tabNode.PlaygroundEditorTheme__textUnderline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.15em;
+  border-bottom: 0.1em solid currentColor;
+}
+
+.lexicaltheme__tabNode.PlaygroundEditorTheme__textStrikethrough::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0.69em;
+  border-top: 0.1em solid currentColor;
+}
+
+.lexicaltheme__tabNode.PlaygroundEditorTheme__textUnderlineStrikethrough::before,
+.lexicaltheme__tabNode.PlaygroundEditorTheme__textUnderlineStrikethrough::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.lexicaltheme__tabNode.PlaygroundEditorTheme__textUnderlineStrikethrough::before {
+  top: 0.69em;
+  border-top: 0.1em solid currentColor;
+}
+
+.lexicaltheme__tabNode.PlaygroundEditorTheme__textUnderlineStrikethrough::after {
+  bottom: 0.05em;
+  border-bottom: 0.1em solid currentColor;
 }
