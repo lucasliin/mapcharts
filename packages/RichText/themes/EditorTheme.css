@@ -836,6 +836,19 @@ button.toolbarbutton:disabled:hover {
   background-color: white;
 }
 
+.lexicaltheme__toolbar_scroll {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 4px;
+  gap: 2px;
+  border-bottom: 1px solid #d1d5db;
+  background-color: white;
+}
+
 .lexicaltheme__toolbar__divider {
   height: 32px;
   margin: 0px 8px;
@@ -1097,6 +1110,29 @@ button.toolbarbutton:disabled:hover {
   color: #d1d5db;
   cursor: default;
   background-color: white;
+}
+
+.lexicaltheme__dropdown__activor_md {
+  min-height: 36px;
+  min-width: 100px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: #374151;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.lexicaltheme__dropdown__activor_md:hover {
+  background-color: #0000000d;
+}
+
+.lexicaltheme__dropdown__activor_md:disabled {
+  color: #d1d5db;
+  cursor: default;
 }
 
 .lexicaltheme__dropdown__activor {

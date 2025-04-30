@@ -64,15 +64,7 @@ export interface LnkstoneEditorProps {
 }
 
 const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
-  const {
-    id,
-    preview,
-    disabled,
-    onChange,
-    placeholder,
-    defaultValue,
-    status = "default",
-  } = props;
+  const { id, preview, disabled, onChange, placeholder, defaultValue, status = "default" } = props;
 
   const borderColor = new Map<string, string>([
     ["default", "#e2e2e2"],
@@ -96,17 +88,11 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
     },
   } = useSettings();
 
-  function prepopulatedRichText(params: {
-    value: string;
-    editor: LexicalEditor;
-  }) {
+  function prepopulatedRichText(params: { value: string; editor: LexicalEditor }) {
     return params.editor.update(() => {
       const root = $getRoot();
 
-      const document = new DOMParser().parseFromString(
-        params.value,
-        "text/html"
-      );
+      const document = new DOMParser().parseFromString(params.value, "text/html");
       const generatedNodes = $generateNodesFromDOM(params.editor, document);
 
       const nodes = [];
@@ -143,8 +129,7 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
     editable: !disabled,
     editorState:
       defaultValue !== undefined
-        ? (editor: LexicalEditor) =>
-            prepopulatedRichText({ value: defaultValue!, editor })
+        ? (editor: LexicalEditor) => prepopulatedRichText({ value: defaultValue!, editor })
         : undefined,
     namespace: "Lexical Demo",
     nodes: [
@@ -163,11 +148,9 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
     theme: theme,
   };
 
-  const [floatingAnchorElem, setFloatingAnchorElem] =
-    useState<HTMLDivElement | null>(null);
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
 
-  const [isSmallWidthViewport, setIsSmallWidthViewport] =
-    useState<boolean>(false);
+  const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
@@ -201,15 +184,22 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
   }, [richTextValue]);
 
   return (
-    <SettingsContext>
+    <SettingsContext
+      initialConfig={{
+        isCharLimit: false,
+        isCharLimitUtf8: false,
+        isCollab: false,
+        isMaxLength: false,
+        showTableOfContents: false,
+        tableCellBackgroundColor: true,
+        tableCellMerge: true,
+        disabled: !!disabled,
+      }}
+    >
       <LexicalComposer initialConfig={initialConfig}>
         <TableContext>
-          <div
-            id={id}
-            className="richtext-editor"
-            style={{ borderColor: borderColor.get(status) }}
-          >
-            <ToolbarPlugin disabled={disabled} />
+          <div id={id} className="richtext-editor" style={{ borderColor: borderColor.get(status) }}>
+            <ToolbarPlugin />
             {/* {max && (
               <MaxLengthPlugin max={max.len} preventInput={max.preventInput} />
             )} */}
@@ -226,9 +216,7 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
               contentEditable={
                 <div className="editor-scroller">
                   <div ref={onRef} className="editor">
-                    <LexicalContentEditable
-                      placeholder={placeholder ?? "请输入"}
-                    />
+                    <LexicalContentEditable placeholder={placeholder ?? "请输入"} />
                   </div>
                 </div>
               }
@@ -266,19 +254,12 @@ const LnkstoneEditor: React.FC<LnkstoneEditorProps> = (props) => {
               <>
                 <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
                 <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                <FloatingTextFormatToolbarPlugin
-                  anchorElem={floatingAnchorElem}
-                />
-                <TableActionMenuPlugin
-                  anchorElem={floatingAnchorElem}
-                  cellMerge={true}
-                />
+                <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+                <TableActionMenuPlugin anchorElem={floatingAnchorElem} cellMerge={true} />
                 <TableHoverActionsPlugin anchorElem={floatingAnchorElem} />
               </>
             )}
-            <SerializationPlugin
-              onChange={(value) => setRichTextValue(value)}
-            />
+            <SerializationPlugin onChange={(value) => setRichTextValue(value)} />
             {/* <CharacterLimitPlugin charset="UTF-8" maxLength={30} /> */}
 
             {preview ? <TreeViewPlugin /> : null}

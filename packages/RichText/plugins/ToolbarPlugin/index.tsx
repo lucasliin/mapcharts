@@ -7,11 +7,7 @@ import {
   ListNode,
 } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $createQuoteNode,
-  $isHeadingNode,
-  $isQuoteNode,
-} from "@lexical/rich-text";
+import { $createQuoteNode, $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
 import {
   $getSelectionStyleValueForProperty,
   $patchStyleText,
@@ -95,6 +91,7 @@ import { InsetYouTubeDialog } from "../YouTubePlugin";
 import { InsertTableDialog } from "../TablePlugin";
 import { $createCodeNode } from "@lexical/code";
 import DropDown from "../../components/DropDown";
+import { useSettings } from "../../context/SettingsContext";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -115,17 +112,12 @@ const Divider: React.FC<{ horizontal?: boolean }> = (props) => {
   const { horizontal = false } = props;
   return (
     <div
-      className={
-        horizontal
-          ? "lexicaltheme__toolbar__divider_h"
-          : "lexicaltheme__toolbar__divider"
-      }
+      className={horizontal ? "lexicaltheme__toolbar__divider_h" : "lexicaltheme__toolbar__divider"}
     />
   );
 };
 
-interface ToolbarButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ToolbarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;
   horizontal?: boolean;
 }
@@ -149,7 +141,8 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = (props) => {
 };
 
 interface ToolbarPluginProps {
-  disabled?: boolean;
+  overflowType?: "fill" | "scroll" | "expand";
+  toolbarConfig?: ToolbarKeys[];
 }
 
 type ToolbarKeys =
@@ -188,14 +181,60 @@ type ToolbarKeys =
   | "code";
 
 const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
-  const { disabled } = props;
+  const {
+    overflowType = "expand",
+    toolbarConfig = [
+      "undo",
+      "redo",
+      "divider",
+      "fontSize",
+      "lineHeight",
+      "letterSpacing",
+      "divider",
+      "fontColor",
+      "backgroundColor",
+      "bold",
+      "italic",
+      "underLine",
+      "strikeThrough",
+      "divider",
+      "subscript",
+      "superscript",
+      "clearFormatting",
+      "emoji",
+      "divider",
+      "outdent",
+      "indent",
+      "textAlignLeft",
+      "textAlignCenter",
+      "textAlignRight",
+      "textAlignJustify",
+      "divider",
+      "listBullet",
+      "listNumber",
+      "listCheck",
+      "quote",
+      "divider",
+      "image",
+      "video",
+      "link",
+      "horizontalRule",
+      "table",
+      "divider",
+      "clearUp",
+      "code",
+    ],
+  } = props;
+  const {
+    settings: { disabled },
+  } = useSettings();
+
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [overflow, setOverflow] = useState<number>();
 
-  const [blockType, setBlockType] =
-    useState<keyof typeof blockTypeToBlockName>("paragraph");
+  const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>("paragraph");
   const [isEditorEmpty, setIsEditorEmpty] = useState(true);
 
   const [canUndo, setCanUndo] = useState(false);
@@ -251,34 +290,19 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
 
       if (elementDOM !== null) {
         if ($isListNode(element)) {
-          const parentList = $getNearestNodeOfType<ListNode>(
-            anchorNode,
-            ListNode
-          );
-          const type = parentList
-            ? parentList.getListType()
-            : (element as ListNode).getListType();
+          const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+          const type = parentList ? parentList.getListType() : (element as ListNode).getListType();
           setBlockType(type);
         } else {
-          const type = $isHeadingNode(element)
-            ? element.getTag()
-            : element.getType();
+          const type = $isHeadingNode(element) ? element.getTag() : element.getType();
           if (type in blockTypeToBlockName) {
             setBlockType(type as keyof typeof blockTypeToBlockName);
           }
         }
       }
       // Handle buttons
-      setFontColor(
-        $getSelectionStyleValueForProperty(selection, "color", "#000")
-      );
-      setBgColor(
-        $getSelectionStyleValueForProperty(
-          selection,
-          "background-color",
-          "#fff"
-        )
-      );
+      setFontColor($getSelectionStyleValueForProperty(selection, "color", "#000"));
+      setBgColor($getSelectionStyleValueForProperty(selection, "background-color", "#fff"));
       let matchingParent;
       if ($isLinkNode(parent)) {
         // If node is a link, we need to fetch the parent paragraph node to set format
@@ -306,15 +330,9 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
       setIsSubscript(selection.hasFormat("subscript"));
       setIsSuperscript(selection.hasFormat("superscript"));
 
-      setFontSize(
-        $getSelectionStyleValueForProperty(selection, "font-size", "16px")
-      );
-      setLineHeight(
-        $getSelectionStyleValueForProperty(selection, "line-height")
-      );
-      setLetterSpacing(
-        $getSelectionStyleValueForProperty(selection, "letter-spacing", "0px")
-      );
+      setFontSize($getSelectionStyleValueForProperty(selection, "font-size", "16px"));
+      setLineHeight($getSelectionStyleValueForProperty(selection, "line-height"));
+      setLetterSpacing($getSelectionStyleValueForProperty(selection, "letter-spacing", "0px"));
     }
   }, [activeEditor]);
 
@@ -374,13 +392,18 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
   }, [$updateToolbar, activeEditor, editor]);
 
   useEffect(() => {
+    if (overflowType !== "expand") {
+      setOverflow(toolbarConfig.length);
+      return;
+    }
+
     const checkOverflow = () => {
       const container = toolbarRef.current;
       if (container) {
         let index = 0;
         let cWidth = container.clientWidth - 8 - 36;
         while (cWidth > 0) {
-          cWidth -= toolbarItemMap[defaultConfig[index]]?.width + 2;
+          cWidth -= toolbarItemMap[toolbarConfig[index]]?.width + 2;
           if (cWidth > 0) index++;
           else index--;
         }
@@ -478,10 +501,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
 
   const insertLink = useCallback(() => {
     if (!isLink) {
-      activeEditor.dispatchCommand(
-        TOGGLE_LINK_COMMAND,
-        sanitizeUrl("https://")
-      );
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl("https://"));
     } else {
       activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
@@ -518,48 +538,6 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
     }
   };
 
-  const defaultConfig: ToolbarKeys[] = [
-    "undo",
-    "redo",
-    "divider",
-    "fontSize",
-    "lineHeight",
-    "letterSpacing",
-    "divider",
-    "fontColor",
-    "backgroundColor",
-    "bold",
-    "italic",
-    "underLine",
-    "strikeThrough",
-    "divider",
-    "subscript",
-    "superscript",
-    "clearFormatting",
-    "emoji",
-    "divider",
-    "outdent",
-    "indent",
-    "textAlignLeft",
-    "textAlignCenter",
-    "textAlignRight",
-    "textAlignJustify",
-    "divider",
-    "listBullet",
-    "listNumber",
-    "listCheck",
-    "quote",
-    "divider",
-    "image",
-    "video",
-    "link",
-    "horizontalRule",
-    "table",
-    "divider",
-    "clearUp",
-    "code",
-  ];
-
   const toolbarItemMap = {
     divider: {
       width: 17,
@@ -594,11 +572,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
     fontSize: {
       width: 100,
       children: (horizontal?: boolean) => (
-        <DropDownFontSize
-          disabled={disabled}
-          selectionFontSize={fontSize}
-          editor={activeEditor}
-        />
+        <DropDownFontSize disabled={disabled} editor={activeEditor} selectionFontSize={fontSize} />
       ),
     },
     lineHeight: {
@@ -730,11 +704,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
     clearFormatting: {
       width: 36,
       children: (horizontal?: boolean) => (
-        <ToolbarButton
-          disabled={disabled}
-          horizontal={horizontal}
-          onClick={clearFormatting}
-        >
+        <ToolbarButton disabled={disabled} horizontal={horizontal} onClick={clearFormatting}>
           <IconTypeClear />
           {horizontal ? "Clear Format" : null}
         </ToolbarButton>
@@ -743,7 +713,11 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
     emoji: {
       width: 36,
       children: (horizontal?: boolean) => (
-        <DropdownEmoji editor={activeEditor} disabled={disabled} />
+        <DropdownEmoji
+          disabled={disabled}
+          editor={activeEditor}
+          type={horizontal ? "listitem" : "button"}
+        />
       ),
     },
     outdent: {
@@ -752,9 +726,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
         <ToolbarButton
           disabled={disabled}
           horizontal={horizontal}
-          onClick={() =>
-            editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)
-          }
+          onClick={() => editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)}
         >
           <IconOutdent />
           {horizontal ? "Outdent" : null}
@@ -767,9 +739,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
         <ToolbarButton
           disabled={disabled}
           horizontal={horizontal}
-          onClick={() =>
-            editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)
-          }
+          onClick={() => editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)}
         >
           <IconIndent />
           {horizontal ? "Indent" : null}
@@ -797,9 +767,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
           disabled={disabled}
           horizontal={horizontal}
           active={elementFormat === "center"}
-          onClick={() =>
-            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")
-          }
+          onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")}
         >
           <IconTextCenter />
           {horizontal ? "Center Align" : null}
@@ -813,9 +781,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
           disabled={disabled}
           horizontal={horizontal}
           active={elementFormat === "right"}
-          onClick={() =>
-            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")
-          }
+          onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")}
         >
           <IconTextRight />
           {horizontal ? "Right Align" : null}
@@ -829,9 +795,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
           disabled={disabled}
           horizontal={horizontal}
           active={elementFormat === "justify"}
-          onClick={() =>
-            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")
-          }
+          onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")}
         >
           <IconJustify />
           {horizontal ? "Justify Align" : null}
@@ -929,10 +893,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
           horizontal={horizontal}
           onClick={() => {
             showModal("插入图片", (onClose) => (
-              <InsertImageDialog
-                activeEditor={activeEditor}
-                onClose={onClose}
-              />
+              <InsertImageDialog activeEditor={activeEditor} onClose={onClose} />
             ));
           }}
         >
@@ -949,10 +910,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
           horizontal={horizontal}
           onClick={() => {
             showModal(`添加 YouTube 视频`, (onClose) => (
-              <InsetYouTubeDialog
-                activeEditor={activeEditor}
-                onClose={onClose}
-              />
+              <InsetYouTubeDialog activeEditor={activeEditor} onClose={onClose} />
             ));
           }}
         >
@@ -981,9 +939,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
         <ToolbarButton
           disabled={disabled}
           horizontal={horizontal}
-          onClick={() =>
-            editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)
-          }
+          onClick={() => editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)}
         >
           <IconHorizontalRule />
           {horizontal ? "Divider" : null}
@@ -998,10 +954,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
           horizontal={horizontal}
           onClick={() => {
             showModal("插入表格", (onClose) => (
-              <InsertTableDialog
-                activeEditor={activeEditor}
-                onClose={onClose}
-              />
+              <InsertTableDialog activeEditor={activeEditor} onClose={onClose} />
             ));
           }}
         >
@@ -1016,9 +969,7 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
         <ToolbarButton
           horizontal={horizontal}
           disabled={isEditorEmpty || disabled}
-          onClick={() =>
-            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined)
-          }
+          onClick={() => editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined)}
         >
           <IconCloseOutlined />
           {horizontal ? "Clear Up" : null}
@@ -1037,29 +988,29 @@ const ToolbarPlugin: React.FC<ToolbarPluginProps> = (props) => {
   };
 
   return (
-    <div ref={toolbarRef} className="lexicaltheme__toolbar">
-      {defaultConfig.map((config, index) => {
+    <div
+      ref={toolbarRef}
+      className={
+        overflowType === "scroll" ? "lexicaltheme__toolbar_scroll" : "lexicaltheme__toolbar"
+      }
+    >
+      {toolbarConfig.map((config, index) => {
         if (!overflow || index > overflow) return null;
         return (
-          <React.Fragment key={config + index}>
-            {toolbarItemMap[config].children()}
-          </React.Fragment>
+          <React.Fragment key={config + index}>{toolbarItemMap[config].children()}</React.Fragment>
         );
       })}
-      {overflow && overflow !== defaultConfig.length ? (
+      {overflow && overflow !== toolbarConfig.length ? (
         <DropDown
           type="button"
           disabled={disabled}
           buttonLabel={<IconDotsHorizontal />}
+          stopCloseOnClickSelf
         >
           <div className="lexicaltheme__dropdown__more_box">
-            {defaultConfig.map((config, index) => {
+            {toolbarConfig.map((config, index) => {
               if (!overflow || index <= overflow) return null;
-              return (
-                <div key={config + index}>
-                  {toolbarItemMap[config].children(true)}
-                </div>
-              );
+              return <div key={config + index}>{toolbarItemMap[config].children(true)}</div>;
             })}
           </div>
         </DropDown>

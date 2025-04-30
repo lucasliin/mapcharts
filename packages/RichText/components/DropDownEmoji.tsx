@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  $createTextNode,
-  $getSelection,
-  $isRangeSelection,
-  LexicalEditor,
-} from "lexical";
+import { $createTextNode, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 
 import { IconEmojiEmotions } from "../icons";
 
@@ -13,6 +8,7 @@ import DropDown from "./DropDown";
 interface DropdownEmojiProps {
   disabled?: boolean;
   editor: LexicalEditor;
+  type?: "button" | "dropdown" | "listitem";
 }
 
 interface Emoji {
@@ -27,7 +23,7 @@ interface Emoji {
 }
 
 const DropdownEmoji: React.FC<DropdownEmojiProps> = (props) => {
-  const { disabled, editor, ...rest } = props;
+  const { disabled, editor, type = "button", ...rest } = props;
   const [emojis, setEmojis] = useState<Array<Emoji>>([]);
 
   useEffect(() => {
@@ -50,9 +46,14 @@ const DropdownEmoji: React.FC<DropdownEmojiProps> = (props) => {
   return (
     <DropDown
       {...rest}
-      type="button"
+      type={type}
       disabled={disabled}
-      buttonLabel={<IconEmojiEmotions />}
+      buttonLabel={
+        <div className="flex items-center justify-start w-full gap-1">
+          <IconEmojiEmotions />
+          {type === "button" ? null : "Emoji"}
+        </div>
+      }
     >
       <div className="lexicaltheme__dropdown__emoji_box">
         {emojis.map((option) => (
